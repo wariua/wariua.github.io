@@ -3,4 +3,6 @@
 
 @import "{{ site.theme }}";
 
+/* hide header */
 div#header { display: none; }
+section { margin-top: 0; }
