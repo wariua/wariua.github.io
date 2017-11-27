@@ -16,7 +16,7 @@ C에도 코루틴이 있으면 좋겠지만 저수준 언어한테 그런 거 �
 
 코루틴보다 살짝 더 직관적인 게 제너레이터니까 다음 파이썬 코드를:
 
-{% highlight python %}
+```python
 def fib(n):
     a, b = 0, 1
     for i in xrange(n):
@@ -25,11 +25,11 @@ def fib(n):
 
 for i in fib(10):
     print i
-{% endhighlight %}
+```
 
 C로 대강 흉내내면 이런 식이다.
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <ucontext.h>
 
@@ -81,7 +81,7 @@ main(void)
 
     return 0;
 }
-{% endhighlight %}
+```
 
 너저분하다. 캡슐화 잘 하면 좀 더 깔끔해지겠지만 이식성 우려 때문에 POSIX에서 퇴출된 함수를 가지고 그렇게 애쓸 필요까지야.
 
