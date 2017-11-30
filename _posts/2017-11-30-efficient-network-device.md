@@ -105,4 +105,4 @@ DPDK 기반 응용이 폴링 모드로 동작하면 CPU 사용률이 쑥쑥 올�
 
 효율적인 소프트웨어 데이터 플레인이라는 목표는 동일하지만 접근 방식이 다른 [OpenDataPlane](https://www.opendataplane.org/)이라는 것도 있다. DPDK가 동작하는 걸 만드는 데 집중한 결과물이라면 ODP는 일반성과 이식성을 목표로 하는 API이다. 그 API 아래에 있는 게 DPDK나 Netmap, raw 소켓일 수도 있고, 하드웨어를 얇은 라이브러리 OS로 감싼 것일 수도 있다. ODP에도 프로토콜 스택은 들어 있지 않고, 그래서 ODP를 기반으로 ARP/IPv4/IPv6, ICMP/TCP/UDP/IGMP 스택을 구현한 [OpenFastPath](http://openfastpath.org/)가 있다. ODP와 OFP, 뜻은 멋진데, 범용적이면서 효율적이기는 힘든 법이다.
 
-[FD.io](https://fd.io/)의 [VPP](https://wiki.fd.io/view/VPP/What_is_VPP%3F)라는 것도 있다. 시스코가 기여했고 [리눅스 재단](https://www.linuxfoundation.org/) 프로젝트가 된 네트워크 응용 프레임워크이다. 일반적인 프로토콜들에 더해 VXLAN이나 IKEv2 같은 프로토콜도 (전부 또는 일부를) 포함하고 있으며, 역시 리눅스 재단 프로젝트인 [OPNFV](https://www.opnfv.org/)의 구조 안에서 데이터 플레인을 맡고 있다. VPP에 쓰고 있는 재밌는 구현 기법 두 가지를 이어지는 포스팅에서 다룬다.
+[FD.io](https://fd.io/)의 [VPP](https://wiki.fd.io/view/VPP/What_is_VPP%3F)라는 것도 있다. 시스코가 기여했고 [리눅스 재단](https://www.linuxfoundation.org/) 프로젝트가 된 네트워크 응용 프레임워크이다. 일반적인 프로토콜들에 더해 VXLAN이나 IKEv2 같은 프로토콜도 (전부 또는 일부) 포함하고 있으며, 역시 리눅스 재단 프로젝트인 [OPNFV](https://www.opnfv.org/)의 구조 안에서 데이터 플레인을 맡고 있다. VPP에서 쓰고 있는 재밌는 구현 기법 두 가지를 이어지는 포스팅에서 다룬다.
