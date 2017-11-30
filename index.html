@@ -6,11 +6,11 @@ title: a blog
   {% for post in paginator.posts %}
     <li>
       <a href="{{ post.url }}">{{ post.title }}</a>
-      <p class="meta">
+      <div class="meta">
         <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
 	{% include post_categories.html categories=post.categories %}
 	{% include post_tags.html tags=post.tags %}
-      </p>
+      </div>
     </li>
 {% endfor %}
 </ul>
