@@ -5,6 +5,12 @@
 
 section { margin-top: 0; }
 
+.post-categories a {
+  background: #444;
+  padding: .3em .8em;
+  border-radius: 3px;
+}
+
 .post-tags {
   padding-left: 25px;
   background: url(/assets/img/tag.png) left no-repeat;
