@@ -1,6 +1,6 @@
 {% if include.categories.size > 0 %}
 <div class="post-categories">
-  {% for tag in include.categories %}
+  {% for category in include.categories %}
     <a href="{{ site.baseurl }}/categories/{{ category }}">{{ category }}</a>
   {% endfor %}
 </div>
