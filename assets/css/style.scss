@@ -10,23 +10,24 @@ code {
   padding: 3px;
 }
 
-.post-categories {
+.meta {
+  margin: 5px 0;
+}
+
+.post-label {
+  margin-left: 10px;
   padding: 5px 0 5px 25px;
+}
+
+.post-categories {
   background: url(/assets/img/category.png) left no-repeat;
 }
 
-.post-categories a {
-  background: #444;
-  padding: .3em .8em;
-  border-radius: 3px;
-}
-
 .post-tags {
-  padding: 5px 0 5px 25px;
   background: url(/assets/img/tag.png) left no-repeat;
 }
 
-.post-tags a {
+.post-label a {
   background: #444;
   padding: .3em .8em;
   border-radius: 3px;
