@@ -1,7 +1,7 @@
 {% if include.categories.size > 0 %}
-<span class="post-label post-categories">
+<div class="post-label post-categories">
   {% for category in include.categories %}
     <a href="{{ site.baseurl }}/categories/{{ category }}">{{ category }}</a>
   {% endfor %}
-</span>
+</div>
 {% endif %}
