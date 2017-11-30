@@ -8,8 +8,8 @@ title: a blog
       <a href="{{ post.url }}">{{ post.title }}</a>
       <div class="meta">
         <span class="date">{{ post.date | date: "%Y-%m-%d" }}</span>
-	{% include post_categories.html categories=post.categories %}
-	{% include post_tags.html tags=post.tags %}
+	{% include post_labels.html labels=post.categories class="categories" %}
+	{% include post_labels.html labels=post.tags class="tags" %}
       </div>
     </li>
 {% endfor %}
