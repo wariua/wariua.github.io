@@ -10,6 +10,11 @@ code {
   padding: 3px;
 }
 
+.post-categories {
+  padding: 25px 5px 0 5px;
+  background: url(/assets/img/category.png) left no-repeat;
+}
+
 .post-categories a {
   background: #444;
   padding: .3em .8em;
@@ -17,7 +22,7 @@ code {
 }
 
 .post-tags {
-  padding-left: 25px;
+  padding: 25px 5px 0 5px;
   background: url(/assets/img/tag.png) left no-repeat;
 }
 
