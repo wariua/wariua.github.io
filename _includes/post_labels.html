@@ -1,7 +1,7 @@
 {% if include.labels.size > 0 %}
 <div class="post-label post-{{ include.class }}">
   {% for label in include.labels %}
-    <a href="{{ site.baseurl }}/{{ include.class }}/{{ label }}">{{ label }}</a>
+    <a href="{{ site.baseurl }}/{{ include.class }}.html#label">{{ label }}</a>
   {% endfor %}
 </div>
 {% endif %}
