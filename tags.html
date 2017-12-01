@@ -1,0 +1,16 @@
+---
+layout: default
+---
+<div id="archives">
+{% for tag in site.tags %}
+  <div class="archive-group">
+    {% capture tag_name %}{{ tag | first }}{% endcapture %}
+    <h3 id="#{{ tag_name | downcase }}">{{ tag_name }}</h3>
+    <ul>
+    {% for post in site.tags[tag_name] %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endfor %}
+</div>
