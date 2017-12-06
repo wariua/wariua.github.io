@@ -42,3 +42,9 @@ code {
 .post-label a:hover {
   background: #444;
 }
+
+@media print, screen and (max-width: 720px) {
+  .post-label {
+    display: block;
+  }
+}
