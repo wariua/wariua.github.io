@@ -46,5 +46,6 @@ code {
 @media print, screen and (max-width: 720px) {
   .post-label {
     display: block;
+    margin-left: 0;
   }
 }
