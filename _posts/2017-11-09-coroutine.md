@@ -2,7 +2,7 @@
 layout: post
 title: 코루틴
 category: general
-tags: coroutine
+tags: [scheduling]
 ---
 [코루틴(coroutine)](https://en.wikipedia.org/wiki/Coroutine)은 비선점 멀티태스킹을 위해 서브루틴을 일반화 한 것...이라고 한다. 제너레이터(generator)와 가까운 친척, [고루틴(goroutine)](https://tour.golang.org/concurrency/1)과도 미묘한 친척. 핵심은 지속하는 실행 문맥(스택 + 현재 실행 위치 + 기타 레지스터 + ...)들 사이를 오가며 실행하는 것이다.
 

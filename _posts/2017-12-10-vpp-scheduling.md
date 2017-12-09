@@ -2,7 +2,7 @@
 layout: post
 title: VPP - 스케줄링
 category: performance
-tags: [vpp]
+tags: [vpp, timer, scheduling]
 ---
 데이터 플레인의 주 실행 흐름은 패킷 수신에서 시작된다. 하지만 그와 독립적인 간헐적 실행 흐름이 있을 수 있다. 예를 들어 인터페이스 링크 상태 변화를 감지해서 그에 따라 패킷 처리 경로를 바꾸는 로직이 있을 수 있고, 패킷 재전송이나 대기 중단 같은 타이머 기반 동작이 있을 수도 있다.
 
