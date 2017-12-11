@@ -51,3 +51,6 @@ code {
     margin-left: 0;
   }
 }
+
+.post-list li .meta { opacity: .5; }
+.post-list li:hover .meta { opacity: 1; }
