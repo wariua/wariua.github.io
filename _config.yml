@@ -2,6 +2,7 @@ title: 네트워크 언저리
 
 theme: jekyll-theme-midnight
 lang: ko
+permalink: none
 paginate: 10
 
 #google_analytics:
