@@ -52,5 +52,7 @@ code {
   }
 }
 
+#post-list .title > a { display: block; }
+
 #post-list li .meta { opacity: .3; transition: opacity .5s; }
 #post-list li:hover .meta { opacity: 1; }
