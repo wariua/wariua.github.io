@@ -4,7 +4,7 @@ title: 인스트럭션 캐시와 성능 - 간단 실험
 category: performance
 tags: [cache, perf]
 ---
-[VPP](https://wiki.fd.io/view/VPP)에서는 [인스트럭션 캐시 활용률을 높여서 스루풋을 높이려 한다]({{ site.baseurl }}{% post_url 2017-12-06-vpp-graph $}). 그런데 과연 얼마나 성능을 개선할 수 있을까? icache 적중률이 프로그램 성능에 어느 정도나 영향을 줄까?
+[VPP](https://wiki.fd.io/view/VPP)에서는 [인스트럭션 캐시 활용률을 높여서 스루풋을 높이려 한다]({{ site.baseurl }}{% post_url 2017-12-06-vpp-graph %}). 그런데 과연 얼마나 성능을 개선할 수 있을까? icache 적중률이 프로그램 성능에 어느 정도나 영향을 줄까?
 
 ## 도구
 
