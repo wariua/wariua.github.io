@@ -55,7 +55,7 @@ $ perf stat -e cycles,instructions,...,L1-icache-load-misses,... ./a.out blahbla
      161.878356343 seconds time elapsed
 ```
 
-["What every programmer should know about memory" 7장](https://lwn.net/Articles/257209/)에서 더 많은 도구들을 소개한다.
+["What every programmer should know about memory" 7장](https://lwn.net/Articles/257209/)에서 더 많은 도구들을 소개해 준다.
 
 ## 어림셈
 
@@ -100,7 +100,7 @@ for (i = 0; i < 1000; i++) {
 }
 ```
 
-캐시가 성능에 끼치는 영향을 설명할 때 커다란 다차원 배열을 여러 순서로 접근하면서 실행 시간을 비교하는 경우가 많다. (예: [여기](https://lwn.net/Articles/255364/) 6.2절.) 위 코드도 본질적으로 비슷한 코드이다. icache가 대상이란 게 다를 뿐이다.
+캐시가 성능에 끼치는 영향을 설명할 때 커다란 다차원 배열을 여러 순서로 접근하면서 실행 시간을 비교하는 경우가 많다 (예: [여기](https://lwn.net/Articles/255364/) 6.2절). 위 코드도 본질적으로 비슷한 코드이다. icache가 대상이란 게 다를 뿐이다.
 
 Valgrind 등으로 프로파일링 해 보면 `sqlite3_prepare_v2()`, `sqlite3_step()`, `sqlite3_finalize()`의 실행 인스트럭션 수가 10:9:1 정도이다. 당연하지만 SQL 문 내용이나 테이블 스키마, 레코드 개수 등에 따라 비율이 달라진다.
 
