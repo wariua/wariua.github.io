@@ -2,7 +2,7 @@
 layout: post
 title: 재미없는 성능 개선 사례 - Redis
 category: performance
-tags: [perf, lto]
+tags: [redis, perf, lto]
 ---
 [icache가 성능에 끼치는 영향]({{ site.baseurl }}{% post_url 2017-12-21-icache-and-performance-an-experiment %})을 확인해 보려고 처음 만지작거린 건 [Redis](https://redis.io/)였다. [인기 좋은](https://db-engines.com/en/ranking/key-value+store) 서버형 인메모리 NoSQL DB인데 [Memcached](https://memcached.org/) 대용으로도 많이 쓰인다고 한다. key-value 구조를 기반으로 해서 비트맵, 리스트, 셋, 해시 테이블 등으로 지원 타입을 확장했으며 [클러스터링](https://redis.io/topics/cluster-tutorial), [프로시저](https://redis.io/commands/eval), [메시지 브로커](https://redis.io/topics/pubsub) 등의 부가 기능까지 나름의 방식으로 제공한다. 즉, 'full-featured' NoSQL DBMS를 지향하는 프로젝트이다.
 
