@@ -8,7 +8,7 @@ tags: [redis, talloc, sk_buff]
 
 네트워크 프로토콜이든 다른 어디서든 데이터 앞에 붙은 헤더는 일반적으로 메타 데이터를 위한 자리다. 그런데 그 메타 데이터가 사용자에게 필요치 않다면 굳이 헤더를 드러낼 이유가 없다. 이번 글은 메모리 할당을 맴돌며 숨은 헤더를 주제로 하는 변주들이다.
 
-## Redis의 `sds`
+## Redis의 <tt>sds</tt>
 
 [Redis](https://redis.io/)의 근간을 이루는 두 가지 자료 구조를 꼽으라면 해시 기반 딕셔너리인 <tt>[dict](https://github.com/antirez/redis/blob/unstable/src/dict.h)</tt>, 그리고 이진 문자열인 <tt>[sds](https://github.com/antirez/redis/blob/unstable/src/sds.h)</tt>이다. `sds`는 본 데이터인 `char` 배열 앞에 가변 길이 헤더를 붙이고 뒤에 NULL 종료자(`\0`)를 붙인 것이다. `sds` 타입은 `char *`로 정의되어 있어서 본 데이터의 시작 위치를 가리킨다.
 
@@ -312,7 +312,7 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 사용자 공간은 밝고 다채롭다. 이제 커널로 내려갈 차례이다.
 
-## `struct sk_buff`
+## <tt>struct sk_buff</tt>
 
 BSD에 `struct mbuf`가 있고 DPDK에 `struct rte_mbuf`가 있다면 리눅스에는 `struct sk_buff`가 있다. 메타 데이터를 담는 `struct sk_buff` 구조체의 `head` 필드가 패킷 데이터 버퍼를 가리킨다. ([구글 이미지 검색](https://www.google.co.kr/search?q=sk_buff&tbm=isch) 참고.) 그런데 리눅스 커널에서 패킷을 저장할 메모리를 할당할 때 `sk_buff`와 데이터 버퍼를 한 덩어리로 할당하지는 않는다. 그러면 `sk_buff` 사용 방식에 제약이 생기기 때문이다. 즉, 여기엔 숨은 헤더가 없다.
 
