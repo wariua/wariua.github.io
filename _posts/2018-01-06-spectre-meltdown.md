@@ -17,7 +17,7 @@ Fogh 씨 글의 결론부 제목이 "판도라의 상자"이다. 투기적 실�
 
 ## 해법
 
-이번 문제는 원인과 공격 방법, 해법이 모두 간단 명확한 [goto fail](https://en.wikipedia.org/wiki/Unreachable_code#goto_fail_bug) 같은 문제와 다르다. 공격이 더 어렵지만 영향 받는 범위가 크고 현실적으로 가능하면서 확실한 해법이 없다. CPU에서 투기적 실행을 되돌릴 때 남는 부대 효과가 있다는 게 근본 원인인데, 캐시 상태까지 포함해 모든 걸 완벽하게 되돌리는 건 현실적으로 가능하지 않다. 그렇다고 투기적 실행을 포기하고 CPU 성능을 몇 년 전으로 되돌릴 수도 없다. 결국 공격 성공을 위한 다른 조건들을 공략하는 식으로 해결할 수밖에 없다. 멜트다운에 필요한 전제 조건(사용자 공간에 커널 메모리가 매핑 돼 있음)을 제거한 게 KPTI이고, 쿠션을 먹여서 브랜치 예측기의 영향을 피하는 게 구글의 [Retpoline](https://support.google.com/faqs/answer/7625886)이다. 그리고 범위를 벗어난 메모리 접근을 유도당하더라도 다른 방벽으로 막는 게 CVE-2017-5753에 대한 여러 해결책들이다. CPU 벤더에서 마이크로코드 패치가 나온다 해도 이런 식으로 주변 지점을 공략하지, 투기적 실행을 포기하지는 못할 것이다.
+이번 문제는 원인과 공격 방법, 해법이 모두 간단 명확한 [goto fail](https://en.wikipedia.org/wiki/Unreachable_code#goto_fail_bug) 같은 문제와 다르다. 공격이 더 어렵지만 영향 받는 범위가 크고 현실적으로 가능하면서 확실한 해법이 없다. CPU에서 투기적 실행을 되돌릴 때 남는 부대 효과가 있다는 게 근본 원인인데, 캐시 상태까지 포함해 모든 걸 완벽하게 되돌리는 건 현실적으로 가능하지 않다. 그렇다고 투기적 실행을 포기하고 CPU 성능을 몇 년 전으로 되돌릴 수도 없다. 결국 공격 성공을 위한 다른 조건들을 공략하는 식으로 해결할 수밖에 없다. 멜트다운에 필요한 전제 조건(사용자 공간에 커널 메모리가 매핑 돼 있음)을 제거하는 게 KPTI이고, 쿠션을 먹여서 조작된 브랜치 예측기의 영향을 피하는 게 구글의 [Retpoline](https://support.google.com/faqs/answer/7625886)이다. 투기적 실행으로 인한 시스템 상태 변경을 측정하기 어렵게 만드는 게 [Firefox의 단기 대응책](https://www.mozilla.org/en-US/security/advisories/mfsa2018-01/)이고, 범위를 벗어난 메모리 접근을 유도당하더라도 다른 방벽으로 막는 게 CVE-2017-5753에 대한 다른 여러 해결책들이다. CPU 벤더에서 마이크로코드 패치가 나온다 해도 이런 식으로 주변 지점을 공략하지, 투기적 실행을 포기하지는 못할 것이다.
 
 ## 영향
 
@@ -27,10 +27,12 @@ KPTI는 멜트다운만이 아니라 KASLR 무력화에 대한 해법이기도 �
 
 ## eBPF, Javascript
 
-CVE-2017-5753과 관련해 eBPF나 자바스크립트 얘기가 등장하는 건 JIT 컴파일 때문이다. 문제의 인스트럭션 패턴을 공격 대상이 생성하여 실행하게끔 유도하는 게 비교적 쉽기 때문이다. [소켓 필터](https://www.kernel.org/doc/Documentation/networking/filter.txt)로 쓰이다 확장되고서 용도가 다양해진 eBPF는 조만간 `perf` 유틸리티와 관련해서 다시 등장할 것 같다.
+CVE-2017-5753과 관련해 eBPF나 자바스크립트 얘기가 등장하는 건 JIT 컴파일 때문이다. 문제의 인스트럭션 패턴을 공격 대상이 생성하여 실행하게끔 유도하는 게 상대적으로 쉽다. 하지만 원칙적으로는 외부에서 코드를 받아서 실행하는 모든 경우가 검토 대상이 된다. 다만 투기적 실행을 유도하는 것이 가능하다 해도 그로 인한 시스템 상태 변경을 측정하는 건 또 다른 문제이다.
+
+[소켓 필터](https://www.kernel.org/doc/Documentation/networking/filter.txt)로 쓰이다 확장되고서 용도가 다양해진 eBPF는 조만간 `perf` 유틸리티와 관련해 다시 등장할 예정이다.
 
 ## 부채널
 
 KASLR 무력화 기법들부터 멜트다운/스펙터에 두루 등장하는 게 부채널(side channel)이다. 이전에 [TEMPEST](https://en.wikipedia.org/wiki/Tempest_(codename)) 얘기 처음 읽었을 땐 좀 오버 아닌가 싶기도 했는데, 뭐 가능한 건 가능한 거다. 대신 속도나 정확도에 한계가 있을 수도 있고, 그래서 이번 취약점들을 통한 정보 추출 속도는 (컴퓨터 기준으로) 느린 편이다.
 
-주로 등장하는 부채널이 타이밍 채널인데, 전통적으로 암호학 쪽에도 이와 관련된 [이슈가](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-0147) [많다](http://cr.yp.to/antiforgery/cachetiming-20050414.pdf). 심지어 Redis에도 부채널 공격을 막기 위한 [상수 시간 문자열 비교 함수](https://github.com/antirez/redis/blob/4.0.6/src/server.c#L2613)가 있다!
+주로 등장하는 부채널이 타이밍 채널인데, 전통적으로 암호학 쪽에도 이와 관련된 [이슈가](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-0147) [많다](http://cr.yp.to/antiforgery/cachetiming-20050414.pdf). 심지어 Redis에도 타이밍 공격을 막기 위한 [상수 시간 문자열 비교 함수](https://github.com/antirez/redis/blob/4.0.6/src/server.c#L2613)가 있다!
