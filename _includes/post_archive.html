@@ -2,7 +2,7 @@
 {% for label in include.labels %}
   <div class="archive-group">
     {% capture name %}{{ label | first }}{% endcapture %}
-    <h3 id="#{{ name | downcase }}">{{ name }}</h3>
+    <h3 id="{{ name | downcase }}">{{ name }}</h3>
     <ul>
     {% for post in include.labels[name] %}
       <li><a href="{{ post.url }}">{{ post.title }}</a></li>
