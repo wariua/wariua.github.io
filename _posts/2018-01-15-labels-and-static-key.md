@@ -75,6 +75,32 @@ C 언어를 [온갖 방식으로 확장](https://gcc.gnu.org/onlinedocs/gcc/C-Ex
 
 객체에 `&`를 붙이면 객체의 주소이듯 레이블에 `&&`를 붙이면 [레이블의 주소](https://gcc.gnu.org/onlinedocs/gcc/Labels-as-Values.html)가 된다. 결과를 `void *` 타입 변수에 저장했다가 `goto *ptr;` 식으로 사용할 수도 있다. 배열에 저장할 수도 있으니 상태 머신에서 점프 테이블로 사용하기에 좋다.
 
+그렇게 해서 `_THIS_IP_`는 로컬 레이블 `__here`의 주소, 즉 이 매크로를 호출한 지점의 주소가 된다. 이름 그대로 인스트럭션 포인터 값이다.
+
+```
+$ gcc -S -O2 -xc -o - - << EOF
+#define _THIS_IP_ ({ __label__ __here; __here: &&__here; })
+void *here(void) { return _THIS_IP_; }
+EOF
+
+	.file	""
+	.text
+	.p2align 4,,15
+	.globl	here
+	.type	here, @function
+here:
+.LFB0:
+	.cfi_startproc
+.L2:
+	leaq	.L2(%rip), %rax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	here, .-here
+	.ident	"GCC: (Ubuntu 7.2.0-8ubuntu3) 7.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
 위 코드에는 등장하지 않지만 레이블 관련 확장이 한 가지 더 있다. 레이블에도 속성(`__attribute__(...)`)을 붙일 수 있다. `unused`를 붙여서 "label '...' defined but not used" 경고를 없앨 수 있고 `hot`/`cold`로 `__builtin_expect()`(`likely()`/`unlikely()`) 효과를 줄 수도 있다.
 
 그런데 [레이블 속성](https://gcc.gnu.org/onlinedocs/gcc/Label-Attributes.html) 페이지의 예시 코드를 보면 `asm goto`라는 게 등장한다.
