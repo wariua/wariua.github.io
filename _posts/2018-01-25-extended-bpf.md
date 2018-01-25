@@ -426,7 +426,7 @@ const struct bpf_verifier_ops sk_filter_prog_ops = {
 };
 ```
 
-#### 상위 언어
+## 상위 언어
 
 사실 BPF 사용 확대에 있어 가장 큰 장애물은 프로그래밍 언어다. 어셈블리어 깨작거려서 작성할 수 있는 프로그램에는 한계가 있이니 고급 언어로 작성한 프로그램을 eBPF 기계어로 바꿔 주는 컴파일러가 필요하다. 그래서 LLVM 3.7에 [eBPF 백엔드가 추가](https://github.com/llvm-mirror/llvm/commit/4fe85c75482f9d11c5a1f92a1863ce30afad8d0d)됐다. 그리고 3년이 지났는데 GCC 쪽은 아직 소식이 없다.
 
@@ -640,7 +640,7 @@ static void install_filter(const char *prog_path, int sock)
 
 기원이 소켓 필터이다 보니 네트워크 쪽 용도가 다수이다. 그래서 프로그램 입력도 `struct __sk_buff` 타입인 경우가 많다. `struct __sk_buff`와 기타 입력 데이터 타입들이 `linux/bpf.h` 파일에 정의돼 있다.
 
-##### `BPF_PROG_TYPE_SOCKET_FILTER` - 패킷 필터링, 분류, 파싱, ...
+### `BPF_PROG_TYPE_SOCKET_FILTER` - 패킷 필터링, 분류, 파싱, ...
 
 소켓 필터에 eBPF를 사용할 수도 있다. `setsockopt(SO_ATTACH_FILTER)` 대신 `setsockopt(SO_ATTACH_BPF)`로 붙이면 된다. 프로그램 입력은 `struct __sk_buff`이다. 프로그램 반환 값의 해석 방식은 cBPF에서와 같다.
 
@@ -652,13 +652,13 @@ BPF 원조 사용처인 `PF_PACKET` 소켓에는 일종의 [부하 분산 기능
 
 여담으로, [KCM 패치 설명](https://lwn.net/Articles/657970/)을 보면 향후 확장 가능성 중에 "TLS와의 통합 (커널 내 TLS는 따로 진행)"이란 게 있다. `linux/net/tls/`에 있는 [TLS 레코드 계층](https://wariua.cafe24.com/wiki/Documentation/networking/tls.txt) 구현 과정에서 KCM을 이용하게 될까? 별로 그럴 것 같지 않다. 다중화가 유용할지도 모르겠고, 무엇보다 하드코딩 된 BPF 프로그램을 적재하는 커널 코드란 건 아무래도 이상하다.
 
-##### `BPF_PROG_TYPE_SCHED_CLS`, `BPF_PROG_TYPE_SCHED_ACT` - 패킷 스케줄링
+### `BPF_PROG_TYPE_SCHED_CLS`, `BPF_PROG_TYPE_SCHED_ACT` - 패킷 스케줄링
 
 넷필터가 나왔는데 패킷 스케줄러가 안 나오면 섭섭하다. 분류자(classifier)와 행위(action)로 BPF 프로그램을 사용할 수 있다. 프로그램 입력은 마찬가지로 `struct __sk_buff`이되 더 많은 필드를 사용할 수 있다. 사용할 수 있는 헬퍼 함수도 훨씬 많다. 분류자는 classid를 반환하고 행위는 `TC_ACT_*`를 반환한다.
 
 [tc-bpf(8) 맨페이지](https://github.com/wariua/manpages-ko/wiki/tc-bpf%288%29)에는 `tc`뿐 아니라 BPF 프로그래밍 일반에 대한 유용한 내용이 많다. 그리고 [Cilium 매뉴얼](http://docs.cilium.io/en/latest/bpf/)에는 더 풍부한 정보가 있다.
 
-##### `BPF_PROG_TYPE_SK_SKB` - 소켓 간 메시지 전달
+### `BPF_PROG_TYPE_SK_SKB` - 소켓 간 메시지 전달
 
 [4.14에서 추가](https://github.com/torvalds/linux/commit/b005fd189cec9407b700599e1e80e0552446ee79)된 따끈따끈한 타입이며 [소켓 맵](https://lwn.net/Articles/731133/)(`BPF_MAP_TYPE_SOCKMAP`)에서 사용한다. 소켓 맵은 이름처럼 (TCP) 소켓들의 배열이다. 소켓으로 세그먼트가 들어오면 strparser를 이용해 메시지를 조립하고, 완성되면 배열 내 소켓 하나를 골라서 그리로 보낸다. 또는 그냥 버릴 수도 있다. 메시지 조립과 처리 방식 결정에 BPF 프로그램을 사용하는데, `bpf(BPF_PROG_ATTACH)`로 소켓 맵에 프로그램을 붙일 때 `attach_type`이 각각 `BPF_SK_SKB_STREAM_PARSER`와 `BPF_SK_SKB_STREAM_VERDICT`이다. 입력은 둘 모두 `struct __sk_buff`이다. PARSER의 반환 값은 KCM에서처럼 메시지 길이(아직 모르면 0)이다. VERDICT의 반환 값은 `SK_DROP` 아니면 `SK_PASS`인데, 메시지가 전달되게 하려면 헬퍼 함수 `bpf_sk_redirect_map()`으로 대상 소켓을 지정한 후 `SK_PASS`를 반환하면 된다.
 
@@ -666,7 +666,7 @@ BPF 원조 사용처인 `PF_PACKET` 소켓에는 일종의 [부하 분산 기능
 
 [소켓 맵 소스 코드](https://github.com/torvalds/linux/blob/master/kernel/bpf/sockmap.c)를 보면 저작권자가 "Covalent IO, Inc. http://covalent.io"라고 돼 있다. 앞서 슬쩍 등장했던 [Cilium](https://www.cilium.io/)이 바로 이 회사의 프로젝트다. Cilium은 컨테이너 환경 마이크로서비스를 주요 대상으로 하는 L7 스위치이다. 한편으로 같은 저작권자명이 [장치 맵 소스 코드](https://github.com/torvalds/linux/blob/master/kernel/bpf/devmap.c)에도 등장하는데, 이 맵은 XDP를 위한 것이다.
 
-##### `BPF_PROG_TYPE_XDP` - 효율적인 대안 패킷 처리 경로
+### `BPF_PROG_TYPE_XDP` - 효율적인 대안 패킷 처리 경로
 
 Cilium이 TCP 소켓 위에서 동작하는 L7 스위치라면 [XDP](http://prototype-kernel.readthedocs.io/en/latest/networking/XDP/introduction.html)는 장치 드라이버 근처에서 동작하는 패킷 스위치... 등을 만드는 데 쓸 수 있는 프레임워크이다. 수신 패킷 처리 경로의 아주 이른 지점에서 장치에 등록된 eBPF 프로그램을 실행하고 그 결과에 따라 패킷을 버리거나(`XDP_DROP`) 커널 네트워크 스택으로 넘기거나(`XDP_PASS`) 들어온 장치로 반사하거나(`XDP_TX`) 다른 장치로 보낸다(`XDP_REDIRECT`). 장치 가까이에서 동작하기 때문에 오버헤드가 작고, 그래서 DoS 방어처럼 성능이 중요한 [여러 용도](http://people.netfilter.org/hawk/presentations/xdp2016/xdp_intro_and_use_cases_sep2016.pdf)에 사용할 수 있다. REDIRECT 할 때 쓰는 게 장치 맵(`BPF_MAP_TYPE_DEVICE_MAP`)이고 IP 주소에 따른 동작을 위해 LPM 맵(`BPF_MAP_TYPE_LPM_TRIE`)을 사용할 수도 있다. Cilium 소스 트리의 [예시 프로그램](https://github.com/cilium/cilium/blob/master/bpf/bpf_xdp.c)을 참고할 수 있다.
 
@@ -683,27 +683,27 @@ struct xdp_md {
 
 장치 드라이버마다 XDP 관련 루틴을 구현해야 하고 `struct net_device`에 연산이 세 가지(`ndo_xdp`, `ndo_xdp_xmit`, `ndo_xdp_flush`)나 추가됐다. 이런 아름답지 못한 모양새를 감수하면서까지 얻으려는 건 결국 [효율적인 대체 네트워크 스택 구현]({{ site.baseurl }}{% post_url 2017-11-30-efficient-network-device %}) 가능성이다. 그런 점에서 XDP는 DPDK와 겹치는 면이 있는데, 더 쉽게 진입할 수 있지만 첫 걸음 너머가 좁고 험하다. BPF가 가능성인 만큼 제약이기도 하기 때문이다. 효율성과 가변성이 중요한 단순한 기능을 빠르게 구현해야 할 때 좋은 선택일 수 있다.
 
-##### `BPF_PROG_TYPE_SOCK_OPS` - TCP 스택 동작 조정
+### `BPF_PROG_TYPE_SOCK_OPS` - TCP 스택 동작 조정
 
 `BPF_PROG_TYPE_XDP`와 `BPF_PROG_TYPE_SK_SKB`가 BPF를 주재료 삼아 새로 뭔가를 만드는 거라면 `BPF_PROG_TYPE_SOCK_OPS`는 기존에 가렵던 지점에서 BPF를 영리하게 이용하는 것이다. TCP 같은 프로토콜에는 동작 환경이나 상황에 따라 적당한 값이 다른 매개변수들이 있기 마련인데, 한 예가 망 환경 발전에 따라 [야](https://tools.ietf.org/html/rfc2001)[금](https://tools.ietf.org/html/rfc2414)[야](https://tools.ietf.org/html/rfc3390)[금](https://tools.ietf.org/html/rfc6928) 커지고 있는 최초 윈도 크기이다. 이런 매개변수를 조정하는 여러 방법들이 있지만 각기 한계나 불편함이 있다 ([커밋 메시지](https://github.com/torvalds/linux/commit/40304b2a1567fecc321f640ee4239556dd0f3ee0) 참고). BPF 프로그램으로 매개변수를 조정할 수 있으면 가령 데이터 센터 내 연결에만 실험적인 성능 지향 매개변수 값을 사용하는 게 가능할 것이다. 더 나아가 연결의 주요 상태 변화 지점에서 BPF 프로그램을 실행할 수 있고 거기서 `setsockopt()`를 호출할 수 있으면 더 다양한 조작이 가능하다.
 
 프로그램 입력은 `struct bpf_sock_ops`이고 반환 값의 해석 방식은 동작 위치(`BPF_SOCK_OPS_*`)에 따라 다르다. `linux/samples/bpf/tcp_*_kern.c` 파일들을 참고할 수 있다. 그런데 프로그램을 붙이는 대상이 cgroup이다. 즉, 원하는 프로세스들의 그룹을 만들어서 거기 BPF 프로그램을 붙여 놓으면 그 프로세스들이 생성한 소켓에서 프로그램이 실행된다. 상당히 편리한 대상 지정 방식인데, 이어지는 세 종류도 cgroup 기반이다.
 
-##### `BPF_PROG_TYPE_CGROUP_SKB` - IP 패킷 필터링
+### `BPF_PROG_TYPE_CGROUP_SKB` - IP 패킷 필터링
 
 `BPF_PROG_TYPE_SOCKET_FILTER`의 개선판이다. 일단 이름처럼 cgroup 단위로 대상을 지정할 수 있다. `AF_INET`/`AF_INET6` 소켓에만 적용되는데, 붙이는 위치(`attr->attach_type`)가 두 가지(`BPF_CGROUP_INET_{INGRESS,EGRESS}`)이다. INGRESS는 실행 위치가 기본적으로 `BPF_PROG_TYPE_SOCKET_FILTER`와 같지만 반환 값 의미론이 다른데, 1이면 통과이고 아니면 버린다. EGRESS로 붙인 프로그램은 패킷 출력 경로 중간쯤(넷필터 POST_ROUTING 직후)에서 실행된다. 마찬가지로 1을 반환하면 통과이고 아니면 버린다. 프로그램 입력은 둘 모두 `struct __sk_buff`이다.
 
 특정 프로세스들이 소켓으로 주고받는 패킷을 통제할 수 있으니 개인 방화벽 만드는 데 써먹는 걸 생각해 볼 수 있다. 일단 대상 프로세스 관리는 넷필터보다 편할 것 같은데 사용자 공간으로 비동기 알림을 보낼 방법이 마땅찮다. 여담으로 세션별 데이터 사용이 가능해지면 (가령 소켓이나 conntrack마다 따로 할당된 워드가 있어서 읽기와 쓰기가 가능하다면) 더 다양한 네트워크 응용이 가능할 것 같다.
 
-##### `BPF_PROG_TYPE_CGROUP_SOCK` - 소켓 생성 제어
+### `BPF_PROG_TYPE_CGROUP_SOCK` - 소켓 생성 제어
 
 `AF_INET`/`AF_INET6` 소켓 생성 과정 마지막에 실행되는 프로그램이다. 1을 반환하면 생성을 허용하고 아니면 막는다. 프로그램 입력(`struct bpf_sock`)에 담긴 정보가 적어서 세밀한 필터링은 어려워 보인다.
 
-##### `BPF_PROG_TYPE_CGROUP_DEVICE` - 장치 파일 접근 제어
+### `BPF_PROG_TYPE_CGROUP_DEVICE` - 장치 파일 접근 제어
 
 간만에 네트워크 외 분야이다. [커널 4.15에 추가](https://github.com/torvalds/linux/commit/ebc614f687369f9df99828572b1d85a7c2de3d92)될 타입이다. 장치 파일 생성/읽기/쓰기를 추가적으로 통제할 수 있는 프로그램이다. 프로그램 입력은 `struct bpf_cgroup_dev_ctx`이며, 1을 반환하면 허용이고 아니면 거부이다.
 
-##### `BPF_PROG_TYPE_LWT_IN`, `BPF_PROG_TYPE_LWT_OUT`, `BPF_PROG_TYPE_LWT_XMIT` - 경량 터널링
+### `BPF_PROG_TYPE_LWT_IN`, `BPF_PROG_TYPE_LWT_OUT`, `BPF_PROG_TYPE_LWT_XMIT` - 경량 터널링
 
 [경량 터널링](https://lwn.net/Articles/650778/)(lightweight tunneling)을 얘기하려면 먼저 기존 터널 얘기를 해야 한다. 전통적 터널에서는 가상 장치를 만들어서 그 장치로 트래픽을 라우팅 한다. 장치 출력 루틴에서 캡슐화가 이뤄지고 결과 패킷을 다시 라우팅 해서 물리적 장치로 내보낸다. 수신 쪽도 비슷하고, 그래서 패킷 송수신 때 네트워크 스택을 두 번 거치는 셈이 된다. 하지만 캡슐화/역캡슐화 과정이 간단한 헤더 붙이고 떼는 게 전부라면, 그리고 결과 패킷을 내보낼 물리적 장치가 미리 정해져 있다면 훨씬 간단한 동작 구조가 가능하다. 가상 장치 같은 건 잊어 버리고 라우트 입출력 함수(`dst->input`, `dst->output`)를 이용하는 것이다.
 
@@ -721,7 +721,7 @@ ip route add 10.1.1.0/30 encap mpls 200 via inet 10.1.1.1 dev swp1
 
 패킷 처리 경로 중간에서 패킷을 조작한다는 면에서 xfrm 프레임워크와도 통한다. LWT 프로그램으로 IPsec을 구현할 수 있을까? 암호 알고리즘은 커널 안에 있는 걸 헬퍼 함수 형태로 쓰면 될 테고 SA는 맵에 저장하면 된다. (동시 접근이 신경 쓰이지만 모른 척하자.) 수신 윈도 처리 같은 것도 무난하게 구현할 수 있을 테고 자잘한 몇몇 기능들은 포기하면 그만이다. 좋다. 가능성을 확인했으니 이제 xfrm을 잘 이용하면 된다.
 
-##### `BPF_PROG_TYPE_KPROBE`, `BPF_PROG_TYPE_TRACEPOINT`, `BPF_PROG_TYPE_PERF_EVENT` - 실행 추적
+### `BPF_PROG_TYPE_KPROBE`, `BPF_PROG_TYPE_TRACEPOINT`, `BPF_PROG_TYPE_PERF_EVENT` - 실행 추적
 
 [Kprobes](https://lwn.net/Articles/132196/)를 이용하면 [커널 디버깅/추적/계측](https://www.ibm.com/developerworks/library/l-kprobes/index.html)을 할 수 있다. 프루브 지점을 설정하면, 그래서 그 위치의 인스트럭션이 [중단점 내지 점프 인스트럭션으로 교체](https://wariua.cafe24.com/wiki/Documentation/kprobes.txt#kprobe.EB.8A.94_.EC.96.B4.EB.96.BB.EA.B2.8C_.EB.8F.99.EC.9E.91.ED.95.98.EB.8A.94.EA.B0.80.3F)되고 나면 커널 실행 흐름이 거길 지날 때 미리 등록해 둔 핸들러가 호출된다. 그러면 자연스럽게 뒤따르는 확장은 [BPF 핸들러를 실행](https://github.com/torvalds/linux/blob/master/kernel/trace/bpf_trace.c)할 수 있게 하는 것이다.
 
