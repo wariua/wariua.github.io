@@ -62,8 +62,11 @@ code {
 #post-list li .meta { opacity: .5; transition: opacity .5s; }
 #post-list li:hover .meta { opacity: 1; }
 
-.pagination { text-align: center; }
-.pagination > * { padding: .3em .5em; }
+.pagination {
+  text-align: center;
+  padding: .5em;
+}
+.pagination > * { padding: 0 .5em; }
 .pagination #current-page { font-weight: bold; }
 .pagination { opacity: .5; transition: opacity .5s }
 .pagination:hover { opacity: 1; }
