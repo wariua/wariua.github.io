@@ -20,9 +20,9 @@ title: 네트워크 언저리
 {% if paginator.total_pages > 1 %}
 <div class="pagination">
   {% if paginator.previous_page %}
-    <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">prev</a>
+    <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo;</a>
   {% else %}
-    <span>prev</span>
+    <span>&laquo;</span>
   {% endif %}
 
   {% for page in (1..paginator.total_pages) %}
@@ -36,9 +36,9 @@ title: 네트워크 언저리
   {% endfor %}
 
   {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">next</a>
+    <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">&raquo;</a>
   {% else %}
-    <span>next</span>
+    <span>&raquo;</span>
   {% endif %}
 </div>
 {% endif %}
