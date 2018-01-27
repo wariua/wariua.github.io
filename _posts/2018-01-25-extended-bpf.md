@@ -726,3 +726,9 @@ ip route add 10.1.1.0/30 encap mpls 200 via inet 10.1.1.1 dev swp1
 [Kprobes](https://lwn.net/Articles/132196/)를 이용하면 [커널 디버깅/추적/계측](https://www.ibm.com/developerworks/library/l-kprobes/index.html)을 할 수 있다. 프루브 지점을 설정하면, 그래서 그 위치의 인스트럭션이 [중지점 내지 점프 인스트럭션으로 교체](https://wariua.cafe24.com/wiki/Documentation/kprobes.txt#kprobe.EB.8A.94_.EC.96.B4.EB.96.BB.EA.B2.8C_.EB.8F.99.EC.9E.91.ED.95.98.EB.8A.94.EA.B0.80.3F)되고 나면 커널 실행 흐름이 거길 지날 때 미리 등록해 둔 핸들러가 호출된다. 그러면 자연스럽게 뒤따르는 확장은 [BPF 핸들러를 실행](https://github.com/torvalds/linux/blob/master/kernel/trace/bpf_trace.c)할 수 있게 하는 것이다.
 
 커널을 대상으로 하는 Kprobe와 사용자 프로세스를 대상으로 하는 Uprobe에서 핸들러로 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_KPROBE`이다. 커널 모듈 작성 없이 미리 정해둔 지점들을 간편하게 조사할 수 있는 Tracepoint와 시스템 호출 추적 메커니즘에 사용할 수 있는 프로그램이 `BPF_PROG_TYPE_TRACEPOINT`이다. 그리고 `perf` 등으로 이벤트 발생 통계를 얻는 데 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_PERF_EVENT`이다. 좀 뜬금없어 보이는 맵 타입 `BPF_MAP_TYPE_STACK_TRACE`와 헬퍼 함수 `bpf_get_stackid()`가 쓰이는 게 이쪽이기도 하다. <tt>[perf_event_open()](https://github.com/wariua/manpages-ko/wiki/perf_event_open%282%29)</tt>으로 얻은 디스크립터에 `ioctl(PERF_EVENT_IOC_SET_BPF)`로 프로그램을 붙인다. `linux/samples/bpf/`에 간단한 예시가 있다.
+
+----
+
+2018-01-27:
+
+유연성, 편의성, 효율성, ... 사이의 트레이드오프가 있는 곳에 BPF를 위한 공간이 있을 수 있다. 그런 곳 중 하나가 SDN이다. 지능을 소프트웨어로 옮겨서 유연해졌지만 바보 장치에게 매번 할 일을 알려 주자니 고역이고 복잡한 걸 지시하기 어렵다는 것도 문제다. 그렇다고 지능 일부를 장치에서 구현하자니 이전으로 돌아가는 게 된다. 플랫폼 중립적 방식으로 지능을 전달할 방법이 있으면 좋을 텐데, 마침 BPF가 있다. 사용자 공간에서 커널로 전달하듯 컨트롤러에서 장치로 로직을 전달하는 것이다. 원칙적으로는 어떤 VM이라도 괜찮겠지만 다양한 네트워크 장치에 구현할 걸 생각하면 JVM이나 Lua VM보단 BPF VM이 적당할 것이다. OpenFlow에 BPF를 도입해 보는 [연구](https://netlab.dcs.gla.ac.uk/projects/openflow-bpf)가 있었는데 특별한 후속 결과는 없나 보다. 하긴, 당장 cBPF vs eBPF 결정도 쉽지 않은 문제이고 무엇보다 보안적 함의가 굉장히 크다.
