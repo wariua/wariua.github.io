@@ -71,3 +71,6 @@ code {
 .pagination #current-page { font-weight: bold; }
 .pagination { opacity: .5; transition: opacity .5s }
 .pagination:hover { opacity: 1; }
+
+#archives .archive-group { opacity: .8; }
+#archives .archive-group:target { opacity: 1; }
