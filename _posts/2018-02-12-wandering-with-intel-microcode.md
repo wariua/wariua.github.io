@@ -8,7 +8,7 @@ tags: [microcode]
 
 (참고: 리눅스뿐 아니라 윈도우에서도 소프트웨어 업데이트 형태로 마이크로코드를 갱신한다.)
 
-#### 알맹이 쪽 식탁 고립
+### 알맹이 쪽 식탁 고립
 
 간만에 커널까지 업데이트 했으니 일단 재부팅을 하고, 에피타이저로 멜트다운 쪽을 슬쩍 살펴보자. KPTI가 Kernel Page Table Isolation이었던가...
 
@@ -32,7 +32,7 @@ bugs		: cpu_meltdown spectre_v1 spectre_v2
 
 아, 버그투성이 CPU 같으니라고... 근데 멜트다운이 좀 밀리는 모양새다. 스펙터에는 무려 버전이 붙어 있다.
 
-#### 見跡
+### 見跡
 
 다시 마이크로코드로 돌아가서, 업데이트 중에 봤으니 첫 번째 단서는 apt 터미널 로그다.
 
@@ -84,7 +84,7 @@ crw------- 1 root root 10, 184  2월  7 11:17 microcode
 
 `.../preinst.d/intel-microcode`가 cpuid 모듈을 적재하는 건 좋은데 왜 적재하느냐고 하면, 현재 시스템의 CPU 모델을 알아내서 거기 맞는 마이크로코드를 골라내기 위해서이다.
 
-#### 역사란 현재와 과거의 끊임없는 대화이다.
+### 역사란 현재와 과거의 끊임없는 대화이다.
 
 이제 슬슬 intel-microcode 패키지를 뒤질 차례인데... 귀찮다.
 
@@ -134,7 +134,7 @@ intel-microcode (3.20180108.0~ubuntu17.10.1) artful-security; urgency=medium
 
 2018년 1월 8일에 새 버전이 나왔다가 문제가 발견돼서 이전 버전으로 되돌렸다. 뉴스 타임라인과 얼추 아귀가 맞는다. 그렇다면 날카로운 육감으로 업데이트 적용을 유예하다 보니 문제 있는 1월 8일 버전 설치를 피할 수 있었던 셈이다. 역시 업데이트는 미뤄야 제맛이다. (참고: 아니다.)
 
-#### 패키지를 패키지로 설치하지 않으면 뭐라 불러야 하나
+### 패키지를 패키지로 설치하지 않으면 뭐라 불러야 하나
 
 딴짓거리도 떨어졌으니 패키지를 볼 차례다. 뭐가 들어 있을까?
 
@@ -198,7 +198,7 @@ IUCODE_CONFIG=/etc/default/intel-microcode
 
 요약하면 `/lib/firmware/intel-ucode/`에 마이크로코드 파일들이 옹기종기 모여 있고, [initrd](https://wariua.cafe24.com/wiki/Documentation/admin-guide/initrd.rst) 이미지 만들 때 실행하는 훅에서 뭔가 심오한 작업을 한다.
 
-#### 소스 코드의 소스가 없으면... 소스를 끼얹자!
+### 소스 코드의 소스가 없으면... 소스를 끼얹자!
 
 사실 바이너리 패키지는 이분법적인 느낌도 있고 해서 쫌 그렇다. 진정한 프로그래머라면 소스를 봐야 한다.
 
@@ -345,7 +345,7 @@ override_dh_auto_install:
 
 에... 그래서, iu를 많이 보려면 상위 디렉터리의 `Makefile`을 보면 된다. `iucode_tool`을 이용해 `microcode-YYYYMMDD.dat` 파일들을 `intel-microcode-64.bin`/`intel-microcode.bin`으로 '컴파일' 하고, `debian/rules`에서 다시 `iucode_tool`로 그걸 쪼개서 '설치'한다. 그렇게 바이너리 패키지가 만들어진다.
 
-#### 처음의 처
+### 처음의 처
 
 intel-microcode 패키지를 설치하면 이런저런 파일들을 복사하고서 좀 있다 initramfs 훅을 실행한다. initramfs 훅에선 뭘 할까?
 
@@ -450,7 +450,7 @@ lib/modules/4.13.0-32-generic/kernel/drivers/net/phy/mdio-cavium.ko
 
 아쉽지만 이 정도면 됐다.
 
-#### 아... 이번엔 제목 뭐 하지.....
+### 아... 이번엔 제목 뭐 하지.....
 
 initrd 이미지 앞에 마이크로코드를 왜 덧붙이는 걸까? 커널 문서 [x86/microcode.txt](https://wariua.cafe24.com/wiki/Documentation/x86/microcode.txt)에 답이 있다. 요약하면, 세 가지 방식으로 CPU 마이크로코드를 업데이트 할 수 있다.
 
@@ -690,7 +690,7 @@ struct microcode_intel {
 ...
 ```
 
-#### 런타임 갱신
+### 런타임 갱신
 
 한편으로 `core.c` 파일은 런타임 마이크로코드 업데이트 기능을 제공하는 드라이버이기도 하다.
 
@@ -810,6 +810,6 @@ int __init microcode_init(void)
 
 `/dev/cpu/microcode` 파일의 주인이 드디어 밝혀졌다. 그리고 세 가지 sysfs 파일(`/sys/devices/system/cpu/cpuN/microcode/{processor_flags,version}`, `/sys/devices/system/cpu/microcode/reload`)을 제공하는 것도, CPU 깰 때 마이크로코드 재적용해 주는 것도 이 드라이버다.
 
-#### 요약
+### 요약
 
 인텔에서 제공하는 마이크로코드를 initrd 이미지 앞에 붙여 뒀다가 부팅 초반에 그 데이터로 <tt>wrmsr</tt> 인스트럭션을 실행한다. 끝.
