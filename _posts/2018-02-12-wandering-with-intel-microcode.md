@@ -56,7 +56,7 @@ intel-microcode: microcode will be updated at next boot
 
 커널 패키지 설치 과정에서 `/etc/kernel/preinst.d/intel-microcode`라는 프로그램을 실행하기도 하고, 무엇보다 intel-microcode라는 패키지가 있다. (버전 문자열의 "really20170707"이 거슬리지만 일단 넘어가자.) 그리고 다음 부팅 때 마이크로코드가 업데이트 된다는 친절한 메시지도 있다.
 
-패키지로 들어가기 전에 자잘한 거 하나 확인해 보자. 커널 패키지 설치 때 실행하던 그 프로그램은 뭘까?
+패키지로 들어가기 전에 자잘한 거 하나 확인해 보자. 커널 패키지 설치 때 실행하는 그 프로그램은 뭘까?
 
 ```
 $ dpkg -S /etc/kernel/preinst.d/intel-microcode
@@ -72,7 +72,7 @@ grep -q cpu/cpuid /proc/devices || modprobe -q cpuid || true
 :
 ```
 
-`/proc/devices` 파일에 "cpu/cpuid"라는 행이 없으면 cpuid라는 커널 모듈 적재, 그리고 무조건 웃으며 반환. `true`만으로는 불안했던지 `:`까지 붙어 있다. x86 아키텍처 한정인 cpuid 모듈은 `/dev/cpu/CPUNUM/cpuid`라는 [장치 파일](https://github.com/wariua/manpages-ko/wiki/cpuid%284%29)을 제공한다. 이 파일을 통해 특정 CPU에서 [CPUID 인스트럭션](https://en.wikipedia.org/wiki/CPUID)을 실행해서 [여러 정보](https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/cpufeatures.h)를 얻을 수 있다. [모듈 소스 코드](https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpuid.c)도 아주 단촐하다. 그럼 장치 파일을 한번 보자.
+`/proc/devices` 파일에 "cpu/cpuid"라는 행이 없으면 cpuid라는 커널 모듈 적재, 그리고 무조건 웃으며 반환. `true`만으로는 불안했던지 `:`까지 붙어 있다. x86 아키텍처 한정인 cpuid 모듈은 `/dev/cpu/CPUNUM/cpuid`라는 [장치 파일](https://github.com/wariua/manpages-ko/wiki/cpuid%284%29)을 제공한다. 이 파일을 통해 특정 CPU에서 [cpuid 인스트럭션](https://en.wikipedia.org/wiki/CPUID)을 실행해서 [여러 정보](https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/cpufeatures.h)를 얻을 수 있다. [모듈 소스 코드](https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpuid.c)도 아주 단촐하다. 그럼 장치 파일을 한번 보자.
 
 ```
 $ ls -l /dev/cpu/
@@ -82,7 +82,7 @@ crw------- 1 root root 10, 184  2월  7 11:17 microcode
 
 이런, 없다. 가능한 원인이 두 가지인데, 시스템 상의 CPU가 0개이거나, cpuid 모듈이 안 올라가 있는 것이다. 정확한 원인을 밝히는 건 기회 될 때 별도 포스트에서 다루도록 하겠다. 그나저나 여기에도 `microcode`라는 이름이 보인다.
 
-`.../preinst.d/intel-microcode`가 cpuid 모듈을 적재하는 건 좋은데 왜 적재하느냐고 하면, 현재 시스템의 CPU 모델을 알아내서 거기 맞는 마이크로코드를 골라내기 위해서이다.
+`../preinst.d/intel-microcode`가 cpuid 모듈을 적재하는 건 좋은데 왜 적재하느냐고 하면, 현재 시스템의 CPU 종류를 알아내서 거기 맞는 마이크로코드를 골라내기 위해서이다.
 
 ### 역사란 현재와 과거의 끊임없는 대화이다.
 
@@ -110,19 +110,7 @@ intel-microcode (3.20180108.0~ubuntu17.10.1) artful-security; urgency=medium
     + Updated Microcodes:
       sig 0x000306c3, pf_mask 0x32, 2017-11-20, rev 0x0023, size 23552
       sig 0x000306d4, pf_mask 0xc0, 2017-11-17, rev 0x0028, size 18432
-      sig 0x000306e4, pf_mask 0xed, 2017-12-01, rev 0x042a, size 15360
-      sig 0x000306f2, pf_mask 0x6f, 2017-11-17, rev 0x003b, size 33792
-      sig 0x000306f4, pf_mask 0x80, 2017-11-17, rev 0x0010, size 17408
-      sig 0x00040651, pf_mask 0x72, 2017-11-20, rev 0x0021, size 22528
-      sig 0x00040661, pf_mask 0x32, 2017-11-20, rev 0x0018, size 25600
-      sig 0x00040671, pf_mask 0x22, 2017-11-17, rev 0x001b, size 13312
-      sig 0x000406e3, pf_mask 0xc0, 2017-11-16, rev 0x00c2, size 99328
-      sig 0x00050654, pf_mask 0xb7, 2017-12-08, rev 0x200003c, size 27648
-      sig 0x00050662, pf_mask 0x10, 2017-12-16, rev 0x0014, size 31744
-      sig 0x00050663, pf_mask 0x10, 2017-12-16, rev 0x7000011, size 22528
-      sig 0x000506e3, pf_mask 0x36, 2017-11-16, rev 0x00c2, size 99328
-      sig 0x000806e9, pf_mask 0xc0, 2018-01-04, rev 0x0080, size 98304
-      sig 0x000806ea, pf_mask 0xc0, 2018-01-04, rev 0x0080, size 98304
+      ...
       sig 0x000906e9, pf_mask 0x2a, 2018-01-04, rev 0x0080, size 98304
    * source: remove unneeded intel-ucode/ directory
    * source: remove superseded upstream data file: 20170707
@@ -132,7 +120,7 @@ intel-microcode (3.20180108.0~ubuntu17.10.1) artful-security; urgency=medium
 ...
 ```
 
-2018년 1월 8일에 새 버전이 나왔다가 문제가 발견돼서 이전 버전으로 되돌렸다. 뉴스 타임라인과 얼추 아귀가 맞는다. 그렇다면 날카로운 육감으로 업데이트 적용을 유예하다 보니 문제 있는 1월 8일 버전 설치를 피할 수 있었던 셈이다. 역시 업데이트는 미뤄야 제맛이다. (참고: 아니다.)
+2018년 1월 8일에 새 버전이 나왔다가 문제가 발견돼서 이전 버전으로 되돌렸다. 뉴스 타임라인과 얼추 아귀가 맞는다. 그렇다면 명민한 육감으로 업데이트를 유예하다 보니 문제 있는 1월 8일 버전 설치를 피할 수 있었던 셈이다. 역시 업데이트는 미뤄야 제맛이다. (참고: 아니다.)
 
 ### 패키지를 패키지로 설치하지 않으면 뭐라 불러야 하나
 
