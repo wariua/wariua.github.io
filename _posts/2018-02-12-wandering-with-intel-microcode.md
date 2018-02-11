@@ -167,9 +167,9 @@ $ dpkg -L intel-microcode
 blacklist microcode
 ```
 
-microcode라는 커널 모듈이 있고, 시스템 동작 중 마이크로코드 갱신을 피하기 위해 모듈 적재를 막는다. 이 파일엔 [슬픈 전설](https://bugs.launchpad.net/intel/+bug/1370352)이 있다.
+microcode라는 커널 모듈을 적재하지 않게 한다. (이 모듈은 현재 커널에 내장돼 있다.) 이를 포함해 여러 방식으로 시스템 동작 중 마이크로코드 갱신을 막고 있는데, 거기엔 [슬픈 사연](https://bugs.launchpad.net/intel/+bug/1370352)이 있다.
 
-그리고 세 박자 이름의 바이너리 파일들이 잔뜩 이어지다가 문서가 몇 개 나온다. 그리고 마지막에 뜬금없는 경로의 파일이 훅 (pun intended...!) 등장한다.
+다음으로 세 박자 이름 바이너리 파일들이 잔뜩 이어지다가 문서가 몇 개 나온다. 그리고 마지막에 뜬금없는 경로의 파일이 훅 (pun intended...!) 등장한다.
 
 `/usr/share/initramfs-tools/hooks/intel_microcode`:
 ```sh
@@ -182,7 +182,7 @@ IUCODE_CONFIG=/etc/default/intel-microcode
 ...
 ```
 
-아까 그 평범한 설정 파일이 여기 쓰인다. 이어지는 코드가 참 좋은 내용인데, 안 읽고 패스.
+아까 그 평범한 설정 파일이 여기 쓰인다. 이어지는 코드가 참 좋은 내용인데, 귀찮으니 패스.
 
 요약하면 `/lib/firmware/intel-ucode/`에 마이크로코드 파일들이 옹기종기 모여 있고, [initrd](https://wariua.cafe24.com/wiki/Documentation/admin-guide/initrd.rst) 이미지 만들 때 실행하는 훅에서 뭔가 심오한 작업을 한다.
 
@@ -201,7 +201,7 @@ to retrieve the latest (possibly unreleased) updates to the package.
 ...
 ```
 
-"please"라는데 어찌 무시할 수 있을까. git clone 하고서 로그를 보니, 췟, 22일 다음 변경이 없다. 아직은. 인텔 엔지니어들, 화이팅. (아, AMD 엔지니어들도 화이팅.)
+"please"라는데 어찌 무시할 수 있을까. `git clone` 하고서 로그를 보니, 췟, 22일 다음 변경이 없다. 아직은. 인텔 엔지니어들, 화이팅. (아, AMD 엔지니어들도 화이팅.)
 
 소스 트리에는 뭐가 있을까?
 
@@ -221,7 +221,7 @@ control        intel-microcode.dirs      source
 copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 ```
 
-딱 봐도 `microcode-YYYYMMDD.dat` 파일이 핵심이다.
+그냥 봐도 `microcode-YYYYMMDD.dat` 파일이 핵심이다.
 
 `microcode-20171117.dat`:
 ```
@@ -232,7 +232,6 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 0x63e49a0c,     0x00000001,     0x00000002,     0x00000000,
 0x00000000,     0x00000000,     0x00000000,     0x00000000,
 0xffffffe9,     0x80e0e61a,     0x7cb2c607,     0xbe1e2fc9,
-0xacaf1526,     0x31514e28,     0x9252d426,     0xb999ebf8,
 ...
 0x78f6c3c5,     0x3d7ca7ef,     0xf3bf6b34,     0x6a42e9df,
 /*  m10f252c.inc  */
@@ -240,7 +239,6 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 0x62d062ab,     0x00000001,     0x00000010,     0x00000000,
 0x00000000,     0x00000000,     0x00000000,     0x00000000,
 0x017464fa,     0xd2fb3494,     0xaf1850af,     0x5af88989,
-0xd3a0a9dd,     0x8e8bd3ad,     0x8c288786,     0xf15f02b0,
 ...
 0x68c94a3c,     0xc9efee21,     0x4d432eb7,     0xe3f5a59f,
 /*  MU165310.inc  */
@@ -248,7 +246,6 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 0x4b6dfc5e,     0x00000001,     0x00000001,     0x00000000,
 0x00000000,     0x00000000,     0x00000000,     0x00000000,
 0xa9f6b598,     0xec73f4eb,     0xffce329e,     0x6c5e06dd,
-0xce5188bb,     0xe94f7930,     0x15eedaa4,     0xf18757d4,
 ...
 0x57688086,     0x218e4005,     0xca054e3d,     0xc1a3c3ec,
 /*  MU16b11d.inc  */
@@ -256,31 +253,23 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 0x6d9b5661,     0x00000001,     0x00000020,     0x00000000,
 0x00000000,     0x00000000,     0x00000000,     0x00000000,
 0x965e94ce,     0xea6ba8df,     0xbfae08d4,     0x3ec50299,
-0xbf2b31ed,     0xbd80d71d,     0x19bfb06d,     0x95e56995,
-...
 ...
 ```
 
 총 99,334줄, 주석 빼면 99,136줄, 한 줄에 16바이트니까 1.6MB 정도의 데이터다. 바이너리 패키지가 `/lib/firmware/intel-ucode/`에 설치하는 파일들이 총 1.2MB 정도. 좀 거르거나 압축을 하나 보다.
 
-`debian/README.Debian' (번역):
-```
-...
-
-마이크로코드 업데이트는 일회성이다. 즉, 프로세서 하드 리셋이나 프로세서 전원 차단 후에는 사라지게 된다. 부팅 때마다, 그리고 시스템이 RAM이나 디스크에서 대기 모드로 있다가 깨어날 때에도 다시 적용시켜야 한다.
-
-...
-
-시스템 시동 중 마이크로코드 업데이트를 건너뛰려면 부트로더(grub, lilo 등)에서 커널로 "dis_ucode_ldr" 매개변수를 (따옴표는 빼고) 전달하게 해야 한다.
-
-...
-
-인텔에서 마이크로코드 번들 새 버전을 직접 내려받을 수 있다. "Linux Microcode"로 검색하면 된다.
-
+`debian/README.Debian` (발췌 번역):
+> 마이크로코드 업데이트는 일회성이다. 즉, 프로세서 하드 리셋이나 프로세서 전원 차단 후에는 사라지게 된다. 부팅 때마다, 그리고 시스템이 RAM이나 디스크에서 대기 모드로 있다가 깨어날 때에도 다시 적용시켜야 한다.
+> 
+> ...
+> 
+> 시스템 시동 중 마이크로코드 업데이트를 건너뛰려면 부트로더(grub, lilo 등)에서 커널로 "`dis_ucode_ldr`" 매개변수를 (따옴표는 빼고) 전달하게 해야 한다.
+> 
+> ...
+> 
+> 인텔에서 마이크로코드 번들 새 버전을 직접 내려받을 수 있다. "Linux Microcode"로 검색하면 된다.
+> 
 > https://downloadcenter.intel.com/search?keyword=linux+microcode
-
-...
-```
 
 `debian/README.source`에도 좋은 정보가 있다. (물론 읽지는 않았다.) `debian/intel-microcode.postinst`는 이름 그대로 패키지 설치 후 실행되는 스크립트인데, 여기서 `update-initramfs -u` 명령을 실행해서 initrd 이미지 갱신을 지시하고 그 친절한 메시지("microcode will be updated at next boot")를 찍는다.
 
@@ -288,19 +277,19 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 
 `debian/rules`:
 ```make
-...
+#...
 PACKAGE := intel-microcode
 DEBDIR  := $(CURDIR)/debian
 PKGDIR  := $(DEBDIR)/$(PACKAGE)
-...
+#...
 IUCODE_TOOL := iucode_tool
-...
+#...
 ifneq (,$(filter amd64 x32,$(DEB_HOST_ARCH)))
 IUCODE_FILE := intel-microcode-64.bin
 else
 IUCODE_FILE := intel-microcode.bin
 endif
-...
+#...
 
 override_dh_auto_install:
         dh_testdir
@@ -326,16 +315,16 @@ override_dh_auto_install:
         install -m 755 "$(DEBDIR)/$(PACKAGE).kpreinst" \
                 "$(PKGDIR)/etc/kernel/preinst.d/$(PACKAGE)"
 
-        ...
+        #...
 ```
 
-아래쪽을 보면 패키징용 디렉터리에 새 이름으로 설치하는 걸 볼 수 있다. 근데 중요한 건 그게 아니다. 바로 위 블록에선 `debian/ucode-blacklist.txt`에 걸리는 파일들에 `.initramfs`를 붙여서 적용 배제하는데, 이것도 중요한 게 아니다. 이 파일의 정수는 그 위의 줄이다. `$(IUCODE_TOOL)`... 그렇다, [IU](http://ifaveent.co.kr/?p=11)다. [ii](https://tools.suckless.org/ii/)도 있고 [uu](https://linux.die.net/man/1/uuencode)도 있지만 우리는 언제나 마음 한 켠 결핍감을 모른 척 덮어 두고서 하루를, 그리고 별반 다른 것 없는 또 다른 하루를 살아내 왔다. 이제 다가올 시간은 이전과 다를 것이다. 우리에게 내일이 생겼다.
+아래쪽을 보면 패키징용 디렉터리에 새 이름으로 설치하는 걸 볼 수 있다. 근데 중요한 건 그게 아니다. 바로 위 블록에선 `debian/ucode-blacklist.txt`에 걸리는 파일들에 `.initramfs`를 붙여서 적용 배제하는데, 이것도 중요한 게 아니다. 이 파일의 핵심은 그 위의 줄이다. `$(IUCODE_TOOL)`... 그렇다, [IU](http://ifaveent.co.kr/?p=11)다. [ii](https://tools.suckless.org/ii/)도 있고 [uu](https://linux.die.net/man/1/uuencode)도 있지만 우리는 언제나 마음 한 켠 결핍감을 모른 척 덮어 두고서 하루를, 그리고 다른 것 없는 또 다른 하루를 살아내 왔다. 이제 다가올 시간은 이전과 다를 것이다. 우리에게 내일이 생겼다.
 
-에... 그래서, iu를 많이 보려면 상위 디렉터리의 `Makefile`을 보면 된다. `iucode_tool`을 이용해 `microcode-YYYYMMDD.dat` 파일들을 `intel-microcode-64.bin`/`intel-microcode.bin`으로 '컴파일' 하고, `debian/rules`에서 다시 `iucode_tool`로 그걸 쪼개서 '설치'한다. 그렇게 바이너리 패키지가 만들어진다.
+에... 그래서, iu를 많이 보려면 상위 디렉터리의 `Makefile`을 보면 된다. `iucode_tool`을 이용해 `microcode-YYYYMMDD.dat` 파일들을 `intel-microcode-64.bin`/`intel-microcode.bin`으로 '컴파일' 한다. 그러면 `debian/rules`에서 다시 `iucode_tool`로 그걸 쪼개서 '설치'한다. 그렇게 바이너리 패키지가 만들어진다.
 
-### 처음의 처
+### 처음의 처음
 
-intel-microcode 패키지를 설치하면 이런저런 파일들을 복사하고서 좀 있다 initramfs 훅을 실행한다. initramfs 훅에선 뭘 할까?
+intel-microcode 패키지를 설치하면 이런저런 파일들을 복사하고서 좀 있다 initramfs 훅을 실행한다. 그 훅에선 뭘 할까?
 
 `/usr/share/initramfs-tools/hooks/intel-microcode`:
 ```sh
@@ -374,7 +363,7 @@ iucode_tool: Writing selected microcodes to: mkinitramfs-EFW_thisistemp
 iucode_tool: mkinitramfs-EFW_thisistemp: 1 microcode entries written, 23552 bytes
 ```
 
-`--scan-system` 옵션을 주면 `/dev/cpu/CPUNUM/cpuid` 파일로 프로세서 시그너처 집합을 얻어서 거기 일치하는 마이크로코드들만 모은다.
+`--scan-system` 옵션을 주면 `/dev/cpu/CPUNUM/cpuid` 파일로 프로세서 시그너처 집합을 얻어서 거기 일치하는 마이크로코드들만 모은다. 그래서 어떤 파일을 만들어 낼까?
 
 ```
 $ file mkinitramfs-EFW_thisistemp
@@ -403,7 +392,8 @@ kernel/x86/microcode/GenuineIntel.bin
 정말 46개 블럭 뒤에 initrd 이미지가 붙어 있을까?
 
 ```
-$ dd skip=46 if=/boot/initrd.img-`uname -r` status=none | gunzip | cpio -t --quiet
+$ dd skip=46 if=/boot/initrd.img-`uname -r` status=none | gunzip | \
+> cpio -t --quiet
 .
 var
 var/lib
@@ -473,7 +463,7 @@ void __init x86_64_start_reservations(char *real_mode_data)
 }
 ```
 
-정말 초반이다. `load_ucode_bsp()`에서 이어지는 나머지 코드는 [linux/arch/x86/kernel/cpu/microcode/](https://github.com/torvalds/linux/tree/master/arch/x86/kernel/cpu/microcode) 안에 있다.
+정말 초반이다. `load_ucode_bsp()`에서 이어지는 나머지 코드는 [linux/arch/x86/kernel/cpu/microcode/](https://github.com/torvalds/linux/tree/master/arch/x86/kernel/cpu/microcode) 안에 모여 있다.
 
 `linux/arch/x86/kernel/cpu/microcode/core.c`:
 ```c
@@ -508,7 +498,7 @@ static bool __init check_loader_disabled_bsp(void)
 }
 ```
 
-커널 매개변수 "dis_ucode_ldr"가 없어야 적재를 진행한다.
+커널 매개변수 `dis_ucode_ldr`가 없어야 적재를 진행한다.
 
 `linux/arch/x86/kernel/cpu/microcode/intel.c`:
 ```c
@@ -627,7 +617,7 @@ $ dmesg | grep microcode
 `linux/arch/x86/include/asm/microcode.h`:
 ```c
 #define native_wrmsrl(msr, val)                         \
-        __wrmsr((msr), (u32)((u64)(val)),
+        __wrmsr((msr), (u32)((u64)(val)),               \
                        (u32)((u64)(val) >> 32))
 ```
 
