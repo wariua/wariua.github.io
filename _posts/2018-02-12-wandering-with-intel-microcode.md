@@ -276,20 +276,20 @@ copyright      intel-microcode.kpreinst  ucode-blacklist.txt
 `debian/` 안의 `intel-microcode.default`, `intel-microcode.kpreinst`, `intel-microcode.modprobe-blacklist`, `initramfs.hook` 등의 파일은 바이너리 패키지에서 봤던 파일들의 아명이다.
 
 `debian/rules`:
-```make
-#...
+```
+...
 PACKAGE := intel-microcode
 DEBDIR  := $(CURDIR)/debian
 PKGDIR  := $(DEBDIR)/$(PACKAGE)
-#...
+...
 IUCODE_TOOL := iucode_tool
-#...
+...
 ifneq (,$(filter amd64 x32,$(DEB_HOST_ARCH)))
 IUCODE_FILE := intel-microcode-64.bin
 else
 IUCODE_FILE := intel-microcode.bin
 endif
-#...
+...
 
 override_dh_auto_install:
         dh_testdir
@@ -315,7 +315,7 @@ override_dh_auto_install:
         install -m 755 "$(DEBDIR)/$(PACKAGE).kpreinst" \
                 "$(PKGDIR)/etc/kernel/preinst.d/$(PACKAGE)"
 
-        #...
+        ...
 ```
 
 아래쪽을 보면 패키징용 디렉터리에 새 이름으로 설치하는 걸 볼 수 있다. 근데 중요한 건 그게 아니다. 바로 위 블록에선 `debian/ucode-blacklist.txt`에 걸리는 파일들에 `.initramfs`를 붙여서 적용 배제하는데, 이것도 중요한 게 아니다. 이 파일의 핵심은 그 위의 줄이다. `$(IUCODE_TOOL)`... 그렇다, [IU](http://ifaveent.co.kr/?p=11)다. [ii](https://tools.suckless.org/ii/)도 있고 [uu](https://linux.die.net/man/1/uuencode)도 있지만 우리는 언제나 마음 한 켠 결핍감을 모른 척 덮어 두고서 하루를, 그리고 다른 것 없는 또 다른 하루를 살아내 왔다. 이제 다가올 시간은 이전과 다를 것이다. 우리에게 내일이 생겼다.
