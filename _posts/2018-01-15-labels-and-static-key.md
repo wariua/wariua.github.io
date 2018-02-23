@@ -337,4 +337,4 @@ OFFSET           TYPE              VALUE
 
 2018-02-24:
 
-**정정**: 사용자 공간에서도 코드 영역을 쓰기 가능하게 바꿀 수 있고, 그래서 [정적 키를 사용자 공간에서 구현]({{ site.baseurl }}{% post_url 2018-02-24-static-key-in-userspace %})할 수 있다.
+**정정**: 사용자 공간에서도 코드 영역을 쓰기 가능하게 바꿀 수 있고, 그래서 [정적 키를 사용자 공간에서 구현]({{ site.baseurl }}{% post_url 2018-02-24-static-key-in-userland %})할 수 있다.
