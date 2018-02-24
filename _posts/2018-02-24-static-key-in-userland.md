@@ -23,7 +23,7 @@ category: general
 
 즉, 플랫폼에 달려 있는데 리눅스에서는 가능하다. 그렇다면 지난 글에서 함께했던 `toeven.c`를 데리고 좀 더 멀리까지 가 볼 수 있다. 브랜치 인스트럭션 패치 루틴(`static_key_enable()`)을 작성해 보자.
 
-더 쌓기 전에 정리부터. 일단 코드를 정적 키 모듈(`static-key.[ch]`), 정적 키 쓰는 모듈(`toeven.c`), 테스트 드라이버(`toeven-driver.c`)로 나눴다. 뒤쪽 둘은 간단하다.
+더 쌓기 전에 정리부터. 일단 코드를 정적 키 모듈(`static-key.[ch]`), 정적 키 사용 모듈(`toeven.c`), 테스트 드라이버(`toeven-driver.c`)로 나눴다. 뒤쪽 둘은 간단하다.
 
 `toeven.c`:
 ```c
@@ -43,7 +43,7 @@ int toeven(int n)
 }
 ```
 
-인스트럭션 패치 후에는 3을 반환하게 된다.
+`static_key_enable(&tell_a_lie)` 호출 후에는 3을 반환하게 된다.
 
 `toeven-driver.c`:
 ```c
@@ -272,8 +272,8 @@ End of assembler dump.
 
 오프셋 10의 다섯 바이트, 잘 바뀐다.
 
-정적 키의 핵심은 간단하다. 브랜치 위치를 기억해 뒀다가 런타임에 인스트럭션을 바꿔치기하는 것이다. 하지만 제대로 쓸 수 있으려면 몇 가지 디테일이 필요하다.
+정적 키의 핵심은 간단하다. 브랜치 위치를 기억해 뒀다가 런타임에 인스트럭션을 바꿔치기하는 것이다. 하지만 제대로 구현하려면 몇 가지 디테일이 필요하다.
 
-첫 번째 이슈는 병렬 실행이다. 사용자 공간 다중 스레드 프로그램에서든 커널에서든, 한 CPU에서 패치 중인 인스트럭션을 다른 CPU에서 실행하려 할 수 있다. 따라서 패치 중에 다른 CPU들을 어디 안전한 코드 위에 붙잡아 두거나 해야 한다. 사용자 공간에서는 <tt>[pthread_barrier_wait()](https://github.com/wariua/manpages-ko/wiki/pthread_barrier_wait%283p%29)</tt> 같은 걸 쓰면 된다. 리눅스 커널에서는 아키텍처에 따라 [그냥 다른 CPU들을 뺑뺑이 돌게](https://github.com/torvalds/linux/blob/v4.15/arch/arm64/kernel/insn.c#L258) 하기도 하고 [트랩까지 이용한 정지 없는 점진적 패치 신공](https://github.com/torvalds/linux/blob/v4.15/arch/x86/kernel/alternative.c#L795)을 쓰기도 한다.
+첫 번째 이슈는 병렬 실행이다. 사용자 공간 다중 스레드 프로그램에서든 커널에서든, 한 CPU에서 패치 중인 인스트럭션을 다른 CPU에서 페치 하려 (pun intended) 할 수 있다. 따라서 패치 중에 다른 CPU들을 어디 안전한 코드 위에 붙잡아 두거나 해야 한다. 사용자 공간에서는 <tt>[pthread_barrier_wait()](https://github.com/wariua/manpages-ko/wiki/pthread_barrier_wait%283p%29)</tt> 같은 걸 쓰면 된다. 리눅스 커널에서는 아키텍처에 따라 [그냥 다른 CPU들을 뺑뺑이 돌게](https://github.com/torvalds/linux/blob/v4.15/arch/arm64/kernel/insn.c#L258) 하기도 하고 [트랩까지 이용한 정지 없는 점진적 패치 신공](https://github.com/torvalds/linux/blob/v4.15/arch/x86/kernel/alternative.c#L795)을 쓰기도 한다.
 
-다음 이슈는 캐시이다. 인스트럭션을 바꿨는데 다른 코어의 인스트럭션 캐시에 이전 인스트럭션이 남아 있으면 곤란하다. 따라서 아키텍처별 방식으로 캐시를 날려야 한다. 사용자 공간에서는 이 문제에 신경 쓰지 않아도 되는데, `mprotect()` 시스템 호출 내에서 캐시를 날려 주기 때문이다.
+다음 이슈는 캐시이다. 인스트럭션을 바꿨는데 다른 코어의 인스트럭션 캐시에 이전 인스트럭션이 남아 있으면 곤란하다. 따라서 아키텍처별 방법으로 캐시를 날려야 한다. 사용자 공간에서는 이 문제에 신경 쓰지 않아도 되는데, `mprotect()` 내에서 캐시를 날려 주기 때문이다.
