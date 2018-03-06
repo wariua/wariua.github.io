@@ -2,7 +2,7 @@
 layout: post
 title: intel-microcode와 떠나는 유랑 대잔치
 category: general
-tags: [microcode]
+tags: [cpu]
 ---
 [유령/용융](https://meltdownattack.com/)의 등골 서늘한 열기가 가시지 않은 어느 날이었다. 패키지 업데이트를 하는데 인텔 마이크로코드 어쩌고 하는 게 지나갔다. 오오, 스펙터 대응을 위한 마이크로코드 업데이트인가!? 근데 이렇게 간단하게 되는 건가? 막 부팅 할 때 Del 키 눌러야 되고 그런 거 아닌가? 한번 살펴보기로 했다.
 
