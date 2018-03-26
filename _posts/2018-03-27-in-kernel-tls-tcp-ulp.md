@@ -55,7 +55,7 @@ TLS/SSL을 커널에 넣으려는 시도가 처음은 아니다. [커널 문서]
 
 성능 쪽은 어떨까? 암호 연산을 소프트웨어로 구현한다면 어디서 돌든 소모 클럭 수가 다르지 않으며 응용에서 여전히 `recv()`/`send()`를 호출한다면 문맥 전환도 줄지 않는다. 뒤집어 생각하면, 암호 장치 사용을 위해 `/dev/crypto` 같은 인터페이스를 거쳐야 하는 경우에는 커널 내 구현으로 오버헤드를 없앨 수 있으며, TLS가 커널에 있으면 [sendfile()](https://github.com/wariua/manpages-ko/wiki/sendfile%282%29) 같은 걸로 문맥 전환을 줄이는 게 가능해진다.
 
-성능이 얼마나 좋아질까? [af_tls 소개 논문](https://netdevconf.org/1.2/papers/ktls.pdf)을 보면 `sendfile()` 사용 시 CPU 사용량이 4~7% 정도 떨어진다고 한다. [AES-NI](https://ko.wikipedia.org/wiki/AES-NI)를 쓰는 경우가 그렇고 암호 연산 수행 방식에 따라 상대적 효과는 달라질 것이다.
+성능이 얼마나 좋아질까? [af_ktls 소개 논문](https://netdevconf.org/1.2/papers/ktls.pdf)을 보면 `sendfile()` 사용 시 CPU 사용량이 4~7% 정도 떨어진다고 한다. [AES-NI](https://ko.wikipedia.org/wiki/AES-NI)를 쓰는 경우가 그렇고 암호 연산 수행 방식에 따라 상대적 효과는 달라질 것이다.
 
 TLS의 일부 내지 전체를 커널에 집어넣는 건 커널-사용자 공간 경계를 응용 쪽으로 옮기는 것이다. 문맥 경계가 (즉 오버헤드가) 아직 남아 있다. 응용과 NIC 사이 구간에서 경계를 아예 없애려면 응용까지 커널로 내리거나 반대로 드라이버와 네트워크 스택을 사용자 공간으로 올리면 된다. 개발 비용 관점에서 할부와 일시불에 해당하는 셈인데 (이율은 케바케), 후자의 예로는 요새 한창 [TLS 지원](https://wiki.fd.io/view/VPP/HostStack/TLS)을 추가하고 있는 VPP가 있다. ([관련](https://gerrit.fd.io/r/gitweb?p=vpp.git;a=tree;f=src/vnet/tls;h=1f2349ea297d7fdffd348383d69d0ab2913c12e8;hb=HEAD) [소](https://gerrit.fd.io/r/gitweb?p=vpp.git;a=tree;f=src/plugins/tlsmbedtls;h=b5806ecac0d1249be0c7995e6d62ce34054bbcaf;hb=HEAD)[스](https://gerrit.fd.io/r/gitweb?p=vpp.git;a=tree;f=src/plugins/tlsopenssl;h=50e37d2edea527af92e89e190076ee720a7648a4;hb=HEAD) 참고.)
 
