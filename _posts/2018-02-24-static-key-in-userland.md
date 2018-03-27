@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 정적 키 in userland
-category: general
+category: facility
 ---
 [정적 키 소개 글]({{ site.baseurl }}{% post_url 2018-01-15-labels-and-static-key %})의 마무리는 이랬다.
 
