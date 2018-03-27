@@ -37,7 +37,7 @@ static int do_tls_setsockopt_tx(...)
 
 이중 라이선스인 게 눈에 띈다. 그리고 코드를 보면 `tls_set_hw_offload()` 같은 함수가 어디 있을 것 같은 모양새인데, [여기에](https://github.com/Mellanox/tls-offload/blob/tls_device_v3/net/tls/tls_device.c) 있다. 그 구현은 Mellanox의 [일부 NIC 제품군](http://www.mellanox.com/page/programmable_network_adapters)에 있는 TLS 오프로드 기능([관련 브랜치](https://github.com/Mellanox/tls-offload/tree/tls_device_v3))을 이용한다. 레코드 계층 전체가 하드웨어로 내려가는 건 아니고, 형식 맞춰서 평문 레코드를 전송하면 NIC에서 암호화 하고 인증 값 채워서 내보낸다. 요컨데 어느 회사가 자기네 제품 팔려고 커널에 관련 코드를 슬쩍 집어넣은 걸로 볼 수도 있다. 한편 Mellanox는 DPDK 프로젝트의 [골드 멤버](http://dpdk.org/about)이고 mlx{4,5} 드라이버를 제공하고 있기도 하다.
 
-TLS/SSL을 커널에 넣으려는 시도가 처음은 아니다. [커널 문서](https://wariua.cafe24.com/wiki/Documentation/networking/tls.txt) 말미의 링크를 따라가 보면 Mellanox의 프로젝트를 거쳐 [af_ktls](https://github.com/ktls/af_ktls)라는 프로젝트에 닿는다. 마찬가지로 레코드 계층을 커널에서 구현한 것인데, ULP를 쓰는 대신 `AF_KTLS`라는 주소 패밀리를 도입하며 (`SOCK_DGRAM`이면? DTLS!), 송신뿐 아니라 수신도 구현하고 있다. (수신 메시지 파싱에 [strparser](https://wariua.cafe24.com/wiki/Documentation/networking/strparser.txt)를 이용한다.) 이 프로젝트 개발이 멈추고 반 년 정도 후에 리눅스 커널에 TLS 모듈이 등장했는데 양쪽 개발자가 좀 겹친다. 그리고 비슷한 시기에 관련 프로젝트 [af_ktls-tool](https://github.com/ktls/af_ktls-tool)이 [Mellanox의 프로젝트](https://github.com/Mellanox/tls-af_ktls_tool)가 됐다. 즉, af_ktls는 ktls의 직계존속이다.
+TLS/SSL을 커널에 넣으려는 시도가 처음은 아니다. [커널 문서](https://wariua.cafe24.com/wiki/Documentation/networking/tls.txt) 말미의 링크를 따라가 보면 Mellanox의 프로젝트를 거쳐 [af_ktls](https://github.com/ktls/af_ktls)라는 프로젝트에 닿는다. 마찬가지로 레코드 계층을 커널에서 구현한 것인데, ULP를 쓰는 대신 `AF_KTLS`라는 주소 패밀리를 도입하며 (`SOCK_DGRAM`이면? DTLS!), 송신뿐 아니라 수신도 구현하고 있다. (수신 메시지 파싱에 [strparser](https://wariua.cafe24.com/wiki/Documentation/networking/strparser.txt)를 이용한다.) 이 프로젝트 개발이 멈추고 반 년 정도 후에 리눅스 커널에 TLS 모듈(이하 ktls)이 등장했는데 양쪽 개발자가 좀 겹친다. 그리고 비슷한 시기에 관련 프로젝트 [af_ktls-tool](https://github.com/ktls/af_ktls-tool)이 [Mellanox의 프로젝트](https://github.com/Mellanox/tls-af_ktls_tool)가 됐다. 즉, af_ktls는 ktls의 직계존속이다.
 
 먼지내가 좀 나기는 하지만 [kssl](http://www.ksl.ci.kyutech.ac.jp/~kourai/research/kssl/kssl.html)이라는 것도 있다. `setsockopt()`를 호출해서 'TLS 모드'로 전환하는 방식은 ktls와 비슷한데, 좀 더 급진적이다. OpenSSL을 통째로 커널에 집어넣고 핸드셰이크까지 커널에서 수행한다. 키 쌍과 CA 인증서 등을 설정할 방법이 필요하고, 그래서 전용 시스템 호출도 하나 추가한다. "어떻게 하면 응용 코드 변경을 가급적 줄이면서 TLS 지원을 추가할 수 있는가?"라는 고민의 (실험적인) 결과물이며 다른 변주로 `LD_PRELOAD`를 이용하는 [libsslwrap](http://www.ksl.ci.kyutech.ac.jp/~kourai/research/libsslwrap/libsslwrap.html)도 있다.
 
@@ -51,7 +51,7 @@ TLS/SSL을 커널에 넣으려는 시도가 처음은 아니다. [커널 문서]
 
 근데 TLS가 보안 프로토콜이고 협상을 하는 프로토콜이다 보니 매개변수가 많다. 제안/허용할 프로토콜/알고리즘/매개변수 조합, 신원 증명/검증을 위한 정보, 각종 확장 기능 사용 여부와 각각의 매개변수까지, 이를 커널에게 전달하기 위한 인터페이스는 복잡할 수밖에 없다. 다 떠나서, 핸드셰이크 로직 자체가 커널에 두기에는 너무 복잡(== 위험)하다.
 
-그래서 나온 타협책이 레코드 계층만 커널에 두는 것인데, 애매한 구조만큼이나 장단점도 어정쩡하다. 물론 IPsec/IKE라는 전례가 있기는 하다. 하지만 IPsec은 그 위에 다시 네트워크 계층이 있다 보니 사용자 공간으로 올리는 게 네트워크 스택을 통째로 올리는 일이 되고, 그래서 일반적으로 커널 구현이 유일한 선택지이다. 하지만 TLS 레코드 계층 위에는 다른 TLS 계층과 응용 계층이 있을 뿐이다.
+그래서 나온 타협책이 레코드 계층만 커널에 두는 것인데, 애매한 구조만큼이나 장단점도 어정쩡하다. 물론 IPsec/IKE라는 전례가 있기는 하다. 하지만 IPsec은 그 위에 다시 네트워크 계층이 있다 보니 사용자 공간으로 올리는 게 네트워크 스택을 통째로 올리는 일이 되고, 그래서 일반적으로 커널 구현이 유일한 선택지다. 하지만 TLS 레코드 계층 위에는 다른 TLS 하위 계층과 응용 계층이 있을 뿐이다.
 
 성능 쪽은 어떨까? 암호 연산을 소프트웨어로 구현한다면 어디서 돌든 소모 클럭 수가 다르지 않으며 응용에서 여전히 `recv()`/`send()`를 호출한다면 문맥 전환도 줄지 않는다. 뒤집어 생각하면, 암호 장치 사용을 위해 `/dev/crypto` 같은 인터페이스를 거쳐야 하는 경우에는 커널 내 구현으로 오버헤드를 없앨 수 있으며, TLS가 커널에 있으면 [sendfile()](https://github.com/wariua/manpages-ko/wiki/sendfile%282%29) 같은 걸로 문맥 전환을 줄이는 게 가능해진다.
 
