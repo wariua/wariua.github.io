@@ -119,4 +119,4 @@ Server Cookie
 
 이걸 기본으로 해서 서버의 동작을 조정할 수 있다. 가령 서버 부하가 낮은 동안에는 클라이언트가 유효한 서버 쿠키를 보내지 않은 경우에도 바로 응답을 보내줄 수 있을 것이다. 위 그림에서 두 번째와 세 번째 단계를 생략하는 셈이다. 반대로 부하가 많이 올라갔을 때는 유효한 쿠키가 담겨 있지 않은 요청을 일정 확률로 무시할 수 있을 것이다.
 
-NTP 쪽은 어떨까? NTP를 이용한 증폭 공격은 MONLIST라는 "그런 게 있었어?" 싶은 명령을 악용했던 거라서 그 명령을 막는 걸로 해결됐다. ([Cloudflare의 설명](https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/) 참고.) 한편으로 [NTS](https://tools.ietf.org/html/draft-ietf-ntp-using-nts-for-ntp)라는 게 준비 중인데, NTP용 간단 DTLS다. 여기선 "절대 요청보다 큰 응답을 보내지 않는다"는 원칙을 통해 증폭 공격을 방지한다. NTS에도 "쿠키"라는 게 등장하는데 TLS의 [세션 티켓](https://wariua.cafe24.com/wiki/RFC5077)에 대응한다. 마찬가지로 소중히 간직하다가 내용을 들여다보지도 않고 그대로 돌려보낸다. 매정한 프로토콜들 같으니라고.
+NTP 쪽은 어떨까? NTP를 이용한 증폭 공격은 MONLIST라는 "그런 게 있었어?" 싶은 명령을 악용했던 거라서 그 명령을 막는 걸로 해결됐다. ([Cloudflare의 설명](https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/) 참고.) 한편으로 [NTS](https://tools.ietf.org/html/draft-ietf-ntp-using-nts-for-ntp)라는 게 준비 중인데, NTP용 간단 DTLS다. 여기선 "요청보다 큰 응답을 보내지 않는다"는 원칙을 통해 증폭 공격을 방지한다. NTS에도 "쿠키"가 등장하는데 TLS의 [세션 티켓](https://wariua.cafe24.com/wiki/RFC5077)에 대응한다. 마찬가지로 소중히 간직하다가 내용을 들여다보지도 않고 그대로 돌려보낸다. 매정한 프로토콜들 같으니라고.
