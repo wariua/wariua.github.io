@@ -356,7 +356,7 @@ printf("DBG: " "fmt-only\n", );
         printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
 ```
 
-나중에는 [__VA_OPT__](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0306r2.html)라는 걸 쓰게 될지도 모르겠다.
+나중에는 [\_\_VA_OPT\_\_](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0306r2.html)라는 걸 쓰게 될지도 모르겠다.
 
 ## 한 번만
 
