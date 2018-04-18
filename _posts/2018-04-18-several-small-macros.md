@@ -92,7 +92,7 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int size
         static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__));  \
         asmlinkage long SyS##name(__MAP(x,__SC_LONG,__VA_ARGS__));      \
         asmlinkage long SyS##name(__MAP(x,__SC_LONG,__VA_ARGS__))       \
-        {
+        {                                                               \
                 long ret = SYSC##name(__MAP(x,__SC_CAST,__VA_ARGS__));  \
                 __MAP(x,__SC_TEST,__VA_ARGS__);                         \
                 __PROTECT(x, ret,__MAP(x,__SC_ARGS,__VA_ARGS__));       \
