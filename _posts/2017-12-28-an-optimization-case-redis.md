@@ -14,7 +14,7 @@ icache 미스가 줄도록 Redis를 바꾸는 걸 포기한 이유는 두 가지
 
 낯선 길에 발을 들이기 전에는 언덕에라도 올라 길이 어떻게 뻗어 있는지 가늠해 볼 일이다.
 
-라이브러리 형태 DB인 SQLite에서 간단한 SELECT 한 번에도 인스트럭션 20k개가 필요했는데 Redis에서 요청 한 개를 10k개도 안 되는 인스트럭션으로 처리하는 건 일견 신기해 보인다. 하지만 SQLite에서 SQL 문 파싱에 인스트럭션 절반을 소모한 데 반해 Redis에서는 단순한 [명령 문법](https://redis.io/commands)과 [프로토콜](https://redis.io/topics/protocol) 덕분에 파싱이 쉽다. 그리고 Redis나 Memcached의 핵심은 거칠게 말해서 `hsearch()` 함수에 통신 인터페이스를 붙인 것이다. 빠른 게 당연하다.
+라이브러리 형태 DB인 SQLite에서 간단한 SELECT 한 번에도 인스트럭션 20k개가 필요했는데 Redis에서 요청 한 개를 10k개도 안 되는 인스트럭션으로 처리하는 건 일견 신기해 보인다. 하지만 SQLite에서 SQL 문 파싱에 인스트럭션 절반을 소모한 데 반해 Redis에서는 단순한 [명령 문법](https://redis.io/commands)과 [프로토콜](https://redis.io/topics/protocol) 덕분에 파싱이 쉽다. 그리고 Redis나 Memcached의 핵심은 거칠게 말해서 <tt>[hsearch()](https://github.com/wariua/manpages-ko/wiki/hsearch%283%29)</tt> 함수에 통신 인터페이스를 붙인 것이다. 빠른 게 당연하다.
 
 이런 단순한 네트워크 기반 응용에서는 응용 자체보다 통신에 더 많은 CPU를 쓰는 경우가 종종 있다. Redis의 기본 동작에는 파일 I/O가 수반되지 않으니 ([RDB와 AOF](https://redis.io/topics/persistence)는 논의에서 제외) 대략적으로 커널 공간 동작이 곧 네트워킹 동작이라고 보면 된다. 한편 `perf` 명령에서는 이벤트 이름에 ":k"나 ":u" 같은 수식자를 붙여서 특정 공간에서의 카운트를 얻을 수 있다.
 
