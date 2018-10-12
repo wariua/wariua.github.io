@@ -2,7 +2,7 @@
 layout: post
 title: 커널 내 TLS - TCP ULP
 category: facility
-tags: [tls, cryptodev]
+tags: [tls, crypto]
 ---
 ## 커널 내 TLS
 

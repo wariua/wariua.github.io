@@ -2,7 +2,7 @@
 layout: post
 title: 비동기 암호 연산
 category: performance
-tags: [tls, cryptodev, scheduling]
+tags: [tls, crypto, scheduling]
 ---
 ## 극세사로 짠 OpenSSL
 
