@@ -16,7 +16,7 @@ TLS를 포함한 여러 암호 응용들에서는 내용이 같은 평문 블록
 
 성능 측면에서 CBC의 단점은 병렬 처리가 안 된다는 점이다. 한 블록을 암호화 하려면 바로 앞 블록을 암호화 한 결과가 필요하기 때문이다. (반면 복호화는 병렬로 진행할 수 있다.)
 
-GCM은 이름(Galois/Counter Mode)처럼 카운터(CTR) 모드에 인증/무결성을 위한 연산을 더한 것이며 AEAD에 잘 어울린다. GCM에서 암호화 부분인 CTR 모드를 보면,
+GCM(Galois/Counter Mode)은 이름처럼 카운터(CTR) 모드에 인증/무결성을 위한 연산을 더한 것이며 AEAD에 잘 어울린다. GCM에서 암호화 부분인 CTR 모드를 보면,
 
 ![CTR 암호화]({{ "/assets/img/CTR_encryption.png" | absolute_url }})
 
