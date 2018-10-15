@@ -36,7 +36,7 @@ GCM은 이름(Galois/Counter Mode)처럼 카운터(CTR) 모드에 인증/무결�
 
 근데 암호 관련 라이브러리들의 소스 코드를 보면 앞에 "v"가 붙은 인스트럭션을 벌써 쓰고 있다. Ice Lake 출시를 대비해서 미리 코드를 짜 놓은 걸까?
 
-[gnutls aesni-gcm-x86_64.s](https://github.com/gnutls/gnutls/blob/master/lib/accelerated/x86/elf/aesni-gcm-x86_64.s):
+GnuTLS aesni-gcm-x86_64.s:
 ```asm
 .Lresume_ctr32:
         ...
