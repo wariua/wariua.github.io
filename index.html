@@ -29,7 +29,7 @@ title: 네트워크 언저리
     {% if page == paginator.page %}
       <span id="current-page">{{ page }}</span>
     {% elsif page == 1 %}
-      <a href="{{ site.baseurl }}">1</a>
+      <a href="{{ site.baseurl | append: '/' | replace: '//', '/' }}">1</a>
     {% else %}
       <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a>
     {% endif %}
