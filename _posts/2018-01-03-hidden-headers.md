@@ -2,7 +2,7 @@
 layout: post
 title: 숨은 헤더
 category: general
-tags: [redis, talloc, sk_buff]
+tags: [redis, talloc]
 ---
 연두에는 헤더 얘기가 제맛이다.
 
