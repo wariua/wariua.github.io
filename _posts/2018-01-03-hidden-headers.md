@@ -226,7 +226,7 @@ static inline void *__talloc_with_prefix(const void *context,
 }
 ```
 
-[left-child right-sibling 이진 트리](https://en.wikipedia.org/wiki/Left-child_right-sibling_binary_tree)를 확장한 자료 구조로 로즈 트리를 표현한다.
+[left-child right-sibling 이진 트리](https://en.wikipedia.org/wiki/Left-child_right-sibling_binary_tree)를 확장한 자료 구조로 [로즈 트리](https://en.wikipedia.org/wiki/Rose_tree)를 표현한다.
 
 ## malloc
 
