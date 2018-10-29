@@ -4,7 +4,7 @@ title: virtio 암호 장치
 category: facility
 tags: [virtio, crypto]
 ---
-전가상화 분야에서 연산 쪽은 네이티브와 다를 바 없게 만들 수 있었지만 I/O 쪽에선 오버헤드가 너무 컸다. 여러 해결 노력이 이어졌는데 그 중 한 방향은 게스트 운영체제에 포함된 어떤 가상 장치 드라이버와 하이퍼바이저가 효율적으로 통신할 수 있게 만드는 것이고, 널리 쓰이는 게 [Rusty Russell의 작품인](https://lwn.net/Articles/239238/) [virtio](http://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html)다. 여러 하이퍼바이저뿐 아니라 [DPDK](http://doc.dpdk.org/guides/nics/virtio.html) 같은 플랫폼에서도 지원한다. 적용 대상으로 쉽게 떠오르는 게 디스크와 NIC인데, 또 어떤 게 가능한지는 서브시스템 ID 목록을 보면 된다.
+전가상화 분야에서 연산 쪽은 네이티브와 다를 바 없게 만들 수 있었지만 I/O 쪽에선 오버헤드가 너무 컸다. 여러 해결 노력이 이어졌는데 그 중 한 방향은 게스트 운영체제에 포함된 어떤 가상 장치 드라이버와 하이퍼바이저가 효율적으로 통신할 수 있게 만드는 것이고, 널리 쓰이는 게 [Rusty Russell이 만들고](https://lwn.net/Articles/239238/) [표준화](http://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html)까지 된 [virtio](https://www.ibm.com/developerworks/library/l-virtio/index.html)다. 여러 하이퍼바이저뿐 아니라 [DPDK](http://doc.dpdk.org/guides/nics/virtio.html) 같은 플랫폼에서도 지원한다. 적용 대상으로 쉽게 떠오르는 게 디스크와 NIC인데, 또 어떤 게 가능한지는 서브시스템 ID 목록을 보면 된다.
 
 `linux/include/uapi/linux/virtio_ids.h`:
 ```c
