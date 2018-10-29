@@ -58,15 +58,14 @@ code {
 
 .credits img { opacity: .6; }
 
-#post-list .title > a {
-  display: block;
-  font-weight: bold;
-}
+#post-list .title > a { display: block; }
 
 #post-list li { opacity: .9; transition: opacity .5s; }
 #post-list li:hover { opacity: 1; }
 #post-list li .meta { opacity: .5; transition: opacity .5s; }
 #post-list li:hover .meta { opacity: 1; }
+
+#post-list li .meta { font-size: smaller; }
 
 .pagination {
   text-align: center;
