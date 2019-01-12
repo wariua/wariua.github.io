@@ -54,6 +54,4 @@ AI 통제의 핵심은 번식 경로 통제이다.
 
 2019-01-12:
 
-망 설계 내지 최적화를 사람 대신 컴퓨터에게 맡기려는 시도는 오래전부터 있었고 그게 현실적으로 가능해진 최근 수년 사이에 활발한 시도가 이뤄지고 있다. 라마르크도 가끔씩 등장하고, 재밌다.
-
-https://www.ml4aad.org/automl/literature-on-neural-architecture-search/
+망 설계 내지 최적화를 사람 대신 컴퓨터에게 맡기려는 시도는 오래전부터 있었고 그게 현실적으로 가능해진 최근 수년 사이에 [활발한 시도](https://www.ml4aad.org/automl/literature-on-neural-architecture-search/)가 이뤄지고 있다. 라마르크도 가끔씩 등장하고, 재밌다.
