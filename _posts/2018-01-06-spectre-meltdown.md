@@ -36,3 +36,9 @@ CVE-2017-5753과 관련해 eBPF나 자바스크립트 얘기가 등장하는 건
 KASLR 무력화 기법들부터 멜트다운/스펙터에 두루 등장하는 게 부채널(side channel)이다. 이전에 [TEMPEST](https://en.wikipedia.org/wiki/Tempest_(codename)) 얘기 처음 읽었을 땐 좀 오버 아닌가 싶기도 했는데, 뭐 가능한 건 가능한 거다. 대신 속도나 정확도에 한계가 있을 수도 있고, 그래서 이번 취약점들을 통한 정보 추출 속도는 (컴퓨터 기준으로) 느린 편이다.
 
 주로 등장하는 부채널이 타이밍 채널인데, 전통적으로 암호학 쪽에도 이와 관련된 [이슈가](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-0147) [많다](http://cr.yp.to/antiforgery/cachetiming-20050414.pdf). 심지어 Redis에도 타이밍 공격을 막기 위한 [상수 시간 문자열 비교 함수](https://github.com/antirez/redis/blob/4.0.6/src/server.c#L2613)가 있다!
+
+----
+
+2019-05-26:
+
+이후 큰 틀에서 비슷한 CPU 취약점들이 더 발견됐고 대응하는 소프트웨어 패치와 마이크로코드 업데이트가 이뤄졌다. 15년 전통의 벤치마크 명가 Phoronix에서 그 대응책들이 [응용 성능에 끼치는 영향을 측정](https://www.phoronix.com/scan.php?page=article&item=mds-zombieload-mit)했다. 당연히 사용자 공간에서 주로 동작하는 응용에는 영향이 적고 문맥 전환이 빈번한 응용에서 영향이 크다.
