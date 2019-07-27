@@ -361,3 +361,9 @@ $ ffmpeg -f s16le -ar 48k -ac 1 -i factory-rnnoised.raw factory-rnnoised.wav
 [들어 보니]({{ "/assets/etc/factory-rnnoised.mp3" | absolute_url }}) 잡음이 거의 사라지긴 했는데 선명하게 남은 게 두드리는 소리다. 보아하니 음성 통화에서 잡음을 제거해서 사람 목소리를 선명하게 만들도록 RNN을 훈련시키고서 [그 결과](https://github.com/xiph/rnnoise/blob/master/src/rnn_data.c)를 라이브러리 형태로 만든 것 같은데, 공장 소리에는 적당치 않은 것 같다.
 
 [Krisp](https://krisp.ai/)라는 잡음 제거 앱에서도 [신경망을 이용하는 모양](https://devblogs.nvidia.com/nvidia-real-time-noise-suppression-deep-learning/)인데, 마찬가지로 사람 목소리가 대상이다.
+
+----
+
+2019-07-27:
+
+능동 소음 제어 기술의 활용 분야로 이어폰/헤드폰 외에 가정(특히 부엌)이나 공장 등에서의 소음 제거도 있고, 제품도 꽤 나와 있다. 능동 소음 제어 기술로 층간 소음도 줄일 수 있을까? 검색해 보니 [관련 특허](https://patents.google.com/patent/KR101603697B1/ko)도 나오는데 제품은 잘 안 보인다. 수요는 (특히 우리나라에선) 충분할 것 같은데, 팔릴 만한 형태로 만들긴 어려운 걸까?
