@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 시계열에서 튀는 곳 찾기
-category: general
-tags: [ai]
+category: trial
+tags: [ann, sound]
 ---
 ## 이상 탐지
 

@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 배경 소음 줄이기
-category: general
-tags: [ai]
+category: trial
+tags: [ann, sound]
 ---
 *한 줄 요약: 배경 소음을 제거하는 방법을 몇 가지 시도해 봤는데 ANN 방식이 개중 낫지만 만족스러운 정도는 아니다.*
 
