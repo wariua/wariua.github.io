@@ -5,4 +5,7 @@ lang: ko
 permalink: none
 paginate: 10
 
+plugins:
+  - jekyll-sitemap
+
 #google_analytics:
