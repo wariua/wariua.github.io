@@ -3,6 +3,7 @@ layout: post
 title: 레이블, 정적 키
 category: facility
 tags: [gcc, perf]
+last_modified_at: 2018-02-24
 ---
 리눅스 커널에서는 실행 흐름 단순화를 위해 다음 코드 패턴을 종종 사용한다.
 

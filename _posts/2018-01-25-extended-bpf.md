@@ -3,6 +3,7 @@ layout: post
 title: 확장 BPF
 category: facility
 tags: [bpf, seccomp, xdp, perf]
+last_modified_at: 2018-01-27
 ---
 TL;DR: eBPF 프로그램을 작성해서 커널 내 여러 지점에서 실행할 수 있다. 네트워크와 실행 추적 쪽에서 주로 사용한다.
 

@@ -2,6 +2,7 @@
 layout: post
 title: 유령 용융 잡담
 category: security
+last_modified_at: 2019-05-26
 ---
 예고 대로 [Meltdown/Spectre](https://meltdownattack.com/)가 공개되고서 인터넷 세상이 시끌시끌하다. 두 취약점에 대한 설명은 [프로젝트 제로 블로그](https://googleprojectzero.blogspot.kr/2018/01/reading-privileged-memory-with-side.html)와 두 논문([Meltdown](https://meltdownattack.com/meltdown.pdf), [Spectre](https://spectreattack.com/spectre.pdf))부터 여러 설명 글까지 많이 있으니 곁다리 잡담이나 해야겠다.
 
