@@ -1,3 +1,4 @@
-user-agent: *
-disallow: /categories.html
-disallow: /tags.html
+User-agent: *
+Allow: /
+
+Sitemap: https://wariua.github.io/sitemap.xml
