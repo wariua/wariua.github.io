@@ -230,7 +230,7 @@ static inline void *__talloc_with_prefix(const void *context,
 
 ## malloc
 
-`sds`나 talloc 아래에는 malloc 계열 메모리 관리자가 있다. 그런데 <tt>[malloc_usable_size()](https://github.com/wariua/manpages-ko/wiki/malloc_usable_size%283%29)</tt> 같은 함수가 가능한 건 `malloc()`이 반환하는 메모리 블록에도 숨은 헤더가 있기 때문이다.
+`sds`나 talloc 아래에는 malloc 계열 메모리 관리자가 있다. 그런데 <tt>[malloc_usable_size()](https://wariua.github.io/man-pages-ko/malloc_usable_size%283%29)</tt> 같은 함수가 가능한 건 `malloc()`이 반환하는 메모리 블록에도 숨은 헤더가 있기 때문이다.
 
 [glibc/malloc/malloc.c](https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/malloc.c):
 ```c

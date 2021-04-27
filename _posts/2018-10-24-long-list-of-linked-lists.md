@@ -107,7 +107,7 @@ static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
 
 `pprev`는 앞 노드의 `next`(또는 `first`) 필드를 가리키는데, 실제 들어가는 주소 값을 놓고 보면 `list_head`의 `prev`와 다를 게 없다. 그래서 여전히 O(1)으로 노드 삽입/제거가 가능하고 원하면 역방향 순회도 가능하다. 원형이 아니라서 생기는 몇 가지 차이를 빼면 다른 게 딱히 없는데도 별도로 타입이 있는 건 `hlist_head` 크기가 절반이기 때문이다. 해시 테이블에서 체인 배열이 잡아먹는 메모리가 절반이라는 얘기고, 그래서 이름에 "h"가 들어가 있다.
 
-사용자 공간에도 [비슷한 구현](https://github.com/wariua/manpages-ko/wiki/queue%283%29)이 있다. BSD에서 온 건데, `list`가 `CIRCLEQ`에 대응하고 `hlist`가 `LIST`에 대응한다. 그리고 좀 아래 나오는 `llist`가 `SLIST`에 대응한다. 리눅스 커널 구현과 비슷하면서도 좀 불편하다.
+사용자 공간에도 [비슷한 구현](https://wariua.github.io/man-pages-ko/queue%287%29)이 있다. BSD에서 온 건데, `list`가 `CIRCLEQ`에 대응하고 `hlist`가 `LIST`에 대응한다. 그리고 좀 아래 나오는 `llist`가 `SLIST`에 대응한다. 리눅스 커널 구현과 비슷하면서도 좀 불편하다.
 
 ## 락! 비트!
 

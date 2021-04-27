@@ -342,7 +342,7 @@ printf("DBG: " "val=%d\n", val);
 printf("DBG: " "fmt-only\n", );
 ```
 
-게다가 컴파일러에 따라선 `dprintf("fmt-only\n", );`라고 해야 매크로가 확장되기도 한다. 복잡하다. 특별한 이유 없으면 [가변 인자](https://github.com/wariua/manpages-ko/wiki/stdarg%283%29) 인라인 함수가 답이다.
+게다가 컴파일러에 따라선 `dprintf("fmt-only\n", );`라고 해야 매크로가 확장되기도 한다. 복잡하다. 특별한 이유 없으면 [가변 인자](https://wariua.github.io/man-pages-ko/stdarg%283%29) 인라인 함수가 답이다.
 
 리눅스 커널에서는 [gcc 확장](https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html)(`##__VA_ARGS__`)을 쓴다.
 
@@ -377,7 +377,7 @@ printf("DBG: " "fmt-only\n", );
 })
 ```
 
-말하자면 <tt>[pthread_once()](https://github.com/wariua/manpages-ko/wiki/pthread_once%283p%29)</tt> 같은 건데, 어쩌다 여러 번 찍는다고 큰일 나는 건 아니니까 설렁설렁 구현해 놨다. 제대로 하자면 락을 쓰면 된다. 그런데 실행 여부를 나타내는 플래그(위의 `__print_once`) 검사에 드는 CPU 클럭이 아까울 수도 있다.
+말하자면 <tt>[pthread_once()](https://wariua.github.io/man-pages-ko/pthread_once%283p%29)</tt> 같은 건데, 어쩌다 여러 번 찍는다고 큰일 나는 건 아니니까 설렁설렁 구현해 놨다. 제대로 하자면 락을 쓰면 된다. 그런데 실행 여부를 나타내는 플래그(위의 `__print_once`) 검사에 드는 CPU 클럭이 아까울 수도 있다.
 
 `linux/include/linux/once.h`:
 ```c

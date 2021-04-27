@@ -9,7 +9,7 @@ category: facility
 
 근데 정말 불가능할까?
 
-[man mprotect(2)](https://github.com/wariua/manpages-ko/wiki/mprotect%282%29):
+[man mprotect(2)](https://wariua.github.io/man-pages-ko/mprotect%282%29):
 
 > ## CONFORMING TO
 >
@@ -274,6 +274,6 @@ End of assembler dump.
 
 정적 키의 핵심은 간단하다. 브랜치 위치를 기억해 뒀다가 런타임에 인스트럭션을 바꿔치기하는 것이다. 하지만 제대로 구현하려면 몇 가지 디테일이 필요하다.
 
-첫 번째 이슈는 병렬 실행이다. 사용자 공간 다중 스레드 프로그램에서든 커널에서든, 한 CPU에서 패치 중인 인스트럭션을 다른 CPU에서 페치 하려 (pun intended) 할 수 있다. 따라서 패치 중에 다른 CPU들을 어디 안전한 코드 위에 붙잡아 두거나 해야 한다. 사용자 공간에서는 <tt>[pthread_barrier_wait()](https://github.com/wariua/manpages-ko/wiki/pthread_barrier_wait%283p%29)</tt> 같은 걸 쓰면 된다. 리눅스 커널에서는 아키텍처에 따라 [그냥 다른 CPU들을 뺑뺑이 돌게](https://github.com/torvalds/linux/blob/v4.15/arch/arm64/kernel/insn.c#L258) 하기도 하고 [트랩까지 이용한 정지 없는 점진적 패치 신공](https://github.com/torvalds/linux/blob/v4.15/arch/x86/kernel/alternative.c#L795)을 쓰기도 한다.
+첫 번째 이슈는 병렬 실행이다. 사용자 공간 다중 스레드 프로그램에서든 커널에서든, 한 CPU에서 패치 중인 인스트럭션을 다른 CPU에서 페치 하려 (pun intended) 할 수 있다. 따라서 패치 중에 다른 CPU들을 어디 안전한 코드 위에 붙잡아 두거나 해야 한다. 사용자 공간에서는 <tt>[pthread_barrier_wait()](https://wariua.github.io/man-pages-ko/pthread_barrier_wait%283p%29)</tt> 같은 걸 쓰면 된다. 리눅스 커널에서는 아키텍처에 따라 [그냥 다른 CPU들을 뺑뺑이 돌게](https://github.com/torvalds/linux/blob/v4.15/arch/arm64/kernel/insn.c#L258) 하기도 하고 [트랩까지 이용한 정지 없는 점진적 패치 신공](https://github.com/torvalds/linux/blob/v4.15/arch/x86/kernel/alternative.c#L795)을 쓰기도 한다.
 
 다음 이슈는 캐시이다. 인스트럭션을 바꿨는데 다른 코어의 인스트럭션 캐시에 이전 인스트럭션이 남아 있으면 곤란하다. 따라서 아키텍처별 방법으로 캐시를 날려야 한다. 사용자 공간에서는 이 문제에 신경 쓰지 않아도 되는데, `mprotect()` 내에서 캐시를 날려 주기 때문이다.

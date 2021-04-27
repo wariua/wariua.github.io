@@ -85,4 +85,4 @@ main(void)
 
 너저분하다. 캡슐화 잘 하면 좀 더 깔끔해지겠지만 이식성 우려 때문에 POSIX에서 퇴출된 함수를 가지고 그렇게 애쓸 필요까지야.
 
-개념적으로 [makecontext()](https://github.com/wariua/manpages-ko/wiki/makecontext%283%29)/[setcontext()](https://github.com/wariua/manpages-ko/wiki/getcontext%283%29)는 [setjmp()/longjmp()](https://github.com/wariua/manpages-ko/wiki/setjmp%283%29)를 일반화 한 거라고 볼 수도 있다. 스택을 되감는 쪽으로만 문맥을 바꿀 수 있느냐 더 자유롭게 전환할 수 있느냐의 차이. 핵심은 결국 주요 레지스터들을 저장하거나 복원하는 거라서 [glibc의 소스 코드](https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/unix/sysv/linux/i386/swapcontext.S)를 봐도 꽤 짧고 단순하다.
+개념적으로 [makecontext()](https://wariua.github.io/man-pages-ko/makecontext%283%29))/[setcontext()](https://wariua.github.io/man-pages-ko/getcontext%283%29)는 [setjmp()/longjmp()](https://wariua.github.io/man-pages-ko/setjmp%283%29)를 일반화 한 거라고 볼 수도 있다. 스택을 되감는 쪽으로만 문맥을 바꿀 수 있느냐 더 자유롭게 전환할 수 있느냐의 차이. 핵심은 결국 주요 레지스터들을 저장하거나 복원하는 거라서 [glibc의 소스 코드](https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/unix/sysv/linux/i386/swapcontext.S)를 봐도 꽤 짧고 단순하다.

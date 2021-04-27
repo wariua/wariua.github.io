@@ -15,7 +15,7 @@ https://www.openssl.org/news/cl110.txt:
 
 파이프라이닝도 재밌어 보이지만 이번 주제는 비동기 동작이다. (근데 그 둘이 무관하지는 않다. 비동기 동작 하에서 파이프라이닝이 의미가 있다.)
 
-일단 [ASYNC_start_job()](https://github.com/wariua/manpages-ko/wiki/ASYNC_start_job%283%29)과 [ASYNC_WAIT_CTX_new()](https://github.com/wariua/manpages-ko/wiki/ASYNC_WAIT_CTX_new%283%29) 맨페이지를 참고할 수 있다. 실보다 가는 [초록색](https://en.wikipedia.org/wiki/Green_threads) [섬유](https://en.wikipedia.org/wiki/Fiber_%28computer_science%29)인데 [POSIX 시스템](https://github.com/openssl/openssl/blob/master/crypto/async/arch/async_posix.c)에서는 `makecontext()`/`setcontext()`를 이용한다. [코루틴 얘기]({{ site.baseurl }}{% post_url 2017-11-09-coroutine %})에 등장했던 문맥 전환 함수들인데, 파이버를 프로그래밍 언어의 어휘로 만든 게 코루틴이니 그렇다.
+일단 [ASYNC_start_job()](https://wariua.github.io/man-pages-ko/ASYNC_start_job%283%29)과 [ASYNC_WAIT_CTX_new()](https://wariua.github.io/man-pages-ko/ASYNC_WAIT_CTX_new%283%29) 맨페이지를 참고할 수 있다. 실보다 가는 [초록색](https://en.wikipedia.org/wiki/Green_threads) [섬유](https://en.wikipedia.org/wiki/Fiber_%28computer_science%29)인데 [POSIX 시스템](https://github.com/openssl/openssl/blob/master/crypto/async/arch/async_posix.c)에서는 `makecontext()`/`setcontext()`를 이용한다. [코루틴 얘기]({{ site.baseurl }}{% post_url 2017-11-09-coroutine %})에 등장했던 문맥 전환 함수들인데, 파이버를 프로그래밍 언어의 어휘로 만든 게 코루틴이니 그렇다.
 
 일반적인 동작 구조는 간단하다. 세션이 생길 때 새 파이버를 만든다. 메인 파이버가 루프를 돌며 새 이벤트(예: 소켓에 수신 데이터 있음)를 확인하다가 이벤트가 발생하면 대응하는 작업 파이버로 전환한다. 작업 파이버에서 이런저런 동작을 하다가 기약 없이 기다려야 할 때가 오면 (예: `recv()`가 `EAGAIN` 반환) 다시 메인 파이버로 전환한다. 메인 스레드에서 이벤트를 감시하며 실행 흐름을 통제한다는 점에선 논블록 소켓에 `poll()` 계열 I/O 다중화 함수를 쓰는 프로그램과 비슷하지만 작업 스레드의 동작 코드를 선형적으로 작성할 수 있다는 점에선 세션마다 스레드를 만드는 방식과 비슷하다. 문맥 전환 비용은 비자발적 스케줄링 방식보다 훨씬 작지만 파이버마다 문맥(스택 + 레지스터 셋)을 유지하기 때문에 메모리 사용량은 큰 차이가 없다.
 
@@ -132,7 +132,7 @@ void crypto_req_done(struct crypto_async_request *req, int err)
 
 `_skcipher_recvmsg()`의 동기 연산 경로에서 `crypto_skcipher_{en,de}crypt()`를 호출하면 거기서 적절한 암호 모듈의 encrypt/decrypt 함수를 호출하고, 그 모듈이 비동기 연산을 지원하면 (예: 다른 CPU로 연산을 오프로드 하는 [pcrypt](https://github.com/torvalds/linux/blob/v4.17/crypto/pcrypt.c#L151)) `-EINPROGRESS`를 반환하고, 그러면 `crypto_wait_req()`에서 태스크가 잠이 든다. 잠시 후 연산이 완료되면 미리 설정해 둔 콜백 `crypto_req_done()`이 호출돼서 태스크가 깨어난다.
 
-운영체제에게 맡기는 방식은 편리하지만 상당한 오버헤드를 감수해야 한다. 태스크를 재우고 깨우는 비용이 크고 두 공간을 오가는 비용도 크다. 한편으로 위 코드에 슬쩍 등장하는 [AIO API](https://github.com/wariua/manpages-ko/wiki/io_submit%282%29)를 쓰면 태스크 전환 횟수를 줄일 가능성이 생기고, 거기에 <tt>[vmsplice()](https://github.com/wariua/manpages-ko/wiki/vmsplice%282%29)</tt> 등을 더하면 데이터가 문맥을 넘나드는 비용을 줄일 수 있다. 요컨데 사용자 쪽에 복잡성을 좀 더해서 성능을 꽤 개선할 수 있지만 구조에서 오는 한계는 남는다. (OpenSSL의 [AFALG 엔진](https://github.com/openssl/openssl/blob/master/engines/e_afalg.c)에서 AIO를 쓴다.)
+운영체제에게 맡기는 방식은 편리하지만 상당한 오버헤드를 감수해야 한다. 태스크를 재우고 깨우는 비용이 크고 두 공간을 오가는 비용도 크다. 한편으로 위 코드에 슬쩍 등장하는 [AIO API](https://wariua.github.io/man-pages-ko/io_submit%282%29)를 쓰면 태스크 전환 횟수를 줄일 가능성이 생기고, 거기에 <tt>[vmsplice()](https://wariua.github.io/man-pages-ko/vmsplice%282%29)</tt> 등을 더하면 데이터가 문맥을 넘나드는 비용을 줄일 수 있다. 요컨데 사용자 쪽에 복잡성을 좀 더해서 성능을 꽤 개선할 수 있지만 구조에서 오는 한계는 남는다. (OpenSSL의 [AFALG 엔진](https://github.com/openssl/openssl/blob/master/engines/e_afalg.c)에서 AIO를 쓴다.)
 
 파이버 같은 가벼운 스케줄링 기법을 쓰면 스케줄링 오버헤드를 최대한 줄일 수 있고 [UIO](https://wariua.cafe24.com/wiki/Documentation/driver-api/uio-howto.rst)를 활용하면 문맥을 넘나드는 비용을 없애거나 줄일 수 있다. OpenSSL에 추가된 ASYNC 모듈이 전자에 해당하고 [QAT 엔진](https://github.com/intel/QAT_Engine) 아래에서 도는 [QAT 드라이버](https://01.org/packet-processing/intel%C2%AE-quickassist-technology-drivers-and-patches)가 UIO 사용자 공간 드라이버다. (리눅스 커널 소스에 포함된 [QAT 드라이버](https://github.com/torvalds/linux/tree/master/drivers/crypto/qat)는 UIO를 지원하지 않는다. 인텔에서 제공하는 드라이버에 포함된 커널 드라이버를 써야 한다.)
 
@@ -350,7 +350,7 @@ int qat_wake_job(volatile *ASYNC_JOB *job, int notificationNo)
 }
 ```
 
-<tt>[eventfd()](https://github.com/wariua/manpages-ko/wiki/eventfd%282%29)</tt>도 등장하고 복잡한데, 결국은 장치로 연산 요청을 보낸 다음 `ASYNC_pause_job()`으로 문맥 바꿔서 다른 일 하다가 연산 완료 콜백을 통해 깨어나면 아까 멈췄던 지점부터 실행을 재개한다는 스토리다. 기본 동작 구조는 간단하지만 다뤄야 하는 기술적 이슈들이 좀 있다.
+<tt>[eventfd()](https://wariua.github.io/man-pages-ko/eventfd%282%29)</tt>도 등장하고 복잡한데, 결국은 장치로 연산 요청을 보낸 다음 `ASYNC_pause_job()`으로 문맥 바꿔서 다른 일 하다가 연산 완료 콜백을 통해 깨어나면 아까 멈췄던 지점부터 실행을 재개한다는 스토리다. 기본 동작 구조는 간단하지만 다뤄야 하는 기술적 이슈들이 좀 있다.
 
 일단 암호 장치에서 연산이 완료됐는지 알 방법이 필요한데, 개념 증명 프로젝트인 "비동기 모드 Nginx"의 [QAT 모듈 소스](https://github.com/intel/asynch_mode_nginx/tree/master/modules/nginx_qat_module)를 참고할 수 있다. 여러 방식이 있는데 결국은 이벤트 알림 아니면 폴링이다. 세부적으로는 어느 실행 흐름에서 폴링을 수행할 것인가 정도의 선택지가 있다.
 
@@ -445,7 +445,7 @@ void tls_on_recv_from_net_wrapper(msg, ...)
 }
 ```
 
-파일 I/O 인터페이스로 메모리 데이터에 접근할 수 있게 해 주는 (<tt>[fmemopen()](https://github.com/wariua/manpages-ko/wiki/fmemopen%283%29)</tt>과 비슷하지만 그보다 낮은 계층의) 메커니즘을 갖추고, 수신 메시지를 그리 넣어 준 다음 `tls_recv()`를 호출하면 내부적으로 네트워크 소켓 대신 그 메모리 버퍼에서 데이터를 읽는다. OpenSSL에는 메모리 [BIO](https://github.com/wariua/manpages-ko/wiki/bio%287%29)가 있고 다른 TLS 라이브러리들에도 함수 콜백 등의 형태로 비슷한 메커니즘이 있다.
+파일 I/O 인터페이스로 메모리 데이터에 접근할 수 있게 해 주는 (<tt>[fmemopen()](https://wariua.github.io/man-pages-ko/fmemopen%283%29)</tt>과 비슷하지만 그보다 낮은 계층의) 메커니즘을 갖추고, 수신 메시지를 그리 넣어 준 다음 `tls_recv()`를 호출하면 내부적으로 네트워크 소켓 대신 그 메모리 버퍼에서 데이터를 읽는다. OpenSSL에는 메모리 [BIO](https://wariua.github.io/man-pages-ko/bio%287%29)가 있고 다른 TLS 라이브러리들에도 함수 콜백 등의 형태로 비슷한 메커니즘이 있다.
 
 미는 구조로 돼 있는 TLS 라이브러리를 당기는 구조에 맞추는 것도 가능하다.
 

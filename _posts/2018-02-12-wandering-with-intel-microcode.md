@@ -72,7 +72,7 @@ grep -q cpu/cpuid /proc/devices || modprobe -q cpuid || true
 :
 ```
 
-`/proc/devices` 파일에 "cpu/cpuid"라는 행이 없으면 cpuid라는 커널 모듈 적재, 그리고 무조건 웃으며 반환. `true`만으로는 불안했던지 `:`까지 붙어 있다. x86 아키텍처 한정인 cpuid 모듈은 `/dev/cpu/CPUNUM/cpuid`라는 [장치 파일](https://github.com/wariua/manpages-ko/wiki/cpuid%284%29)을 제공한다. 이 파일을 통해 특정 CPU에서 [cpuid 인스트럭션](https://en.wikipedia.org/wiki/CPUID)을 실행해서 [여러 정보](https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/cpufeatures.h)를 얻을 수 있다. [모듈 소스 코드](https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpuid.c)도 아주 단촐하다. 그럼 장치 파일을 한번 보자.
+`/proc/devices` 파일에 "cpu/cpuid"라는 행이 없으면 cpuid라는 커널 모듈 적재, 그리고 무조건 웃으며 반환. `true`만으로는 불안했던지 `:`까지 붙어 있다. x86 아키텍처 한정인 cpuid 모듈은 `/dev/cpu/CPUNUM/cpuid`라는 [장치 파일](https://wariua.github.io/man-pages-ko/cpuid%284%29)을 제공한다. 이 파일을 통해 특정 CPU에서 [cpuid 인스트럭션](https://en.wikipedia.org/wiki/CPUID)을 실행해서 [여러 정보](https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/cpufeatures.h)를 얻을 수 있다. [모듈 소스 코드](https://github.com/torvalds/linux/blob/master/arch/x86/kernel/cpuid.c)도 아주 단촐하다. 그럼 장치 파일을 한번 보자.
 
 ```
 $ ls -l /dev/cpu/

@@ -327,7 +327,7 @@ static u32 seccomp_run_filters(const struct seccomp_data *sd,
 
 seccomp의 주된 용도는 샌드박스이다. 웹 브라우저나 서버가 제발로 들어갈 수도 있고 Docker나 LXD가 컨테이너를 집어넣을 수도 있다. 시스템 호출을 선별적으로 실패하게 할 수도 있으니 오류 주입(fault injection)에 쓰는 것도 가능하겠지만 사용자 공간만 보면 안타깝게도 `LD_PRELOAD`가 너무 강적이다.
 
-[seccomp(2) 맨페이지](https://github.com/wariua/manpages-ko/wiki/seccomp%282%29) 말미에 예시 프로그램이 있는데, 숫제 기계어다. [linux/samples/seccomp/](https://github.com/torvalds/linux/tree/master/samples/seccomp) 디렉터리에 예시 프로그램들과 더불어 `bpf-helper.[ch]`가 있는데, 어셈블리어 정도로 만들어 준다. 한 걸음 더 올라가면 [libseccomp](https://lwn.net/Articles/494252/)가 있는데, 자주 쓰는 인스트럭션 패턴을 '규칙'으로 추상화하고 이를 조작하는 API를 제공한다. [테스트 프로그램](https://github.com/seccomp/libseccomp/tree/master/tests)을 보면 꽤 편리해 보인다. 많이 편해졌고 파이썬 바인딩까지 생겼으니 좋은데, 아직 배가 고프다. 남은 건 BPF 프로그램 자체를 고급 언어로 작성하는 것일 텐데, 그 전에 거쳐야 할 과정이 있다.
+[seccomp(2) 맨페이지](https://wariua.github.io/man-pages-ko/seccomp%282%29) 말미에 예시 프로그램이 있는데, 숫제 기계어다. [linux/samples/seccomp/](https://github.com/torvalds/linux/tree/master/samples/seccomp) 디렉터리에 예시 프로그램들과 더불어 `bpf-helper.[ch]`가 있는데, 어셈블리어 정도로 만들어 준다. 한 걸음 더 올라가면 [libseccomp](https://lwn.net/Articles/494252/)가 있는데, 자주 쓰는 인스트럭션 패턴을 '규칙'으로 추상화하고 이를 조작하는 API를 제공한다. [테스트 프로그램](https://github.com/seccomp/libseccomp/tree/master/tests)을 보면 꽤 편리해 보인다. 많이 편해졌고 파이썬 바인딩까지 생겼으니 좋은데, 아직 배가 고프다. 남은 건 BPF 프로그램 자체를 고급 언어로 작성하는 것일 텐데, 그 전에 거쳐야 할 과정이 있다.
 
 ## 확장 BPF
 
@@ -343,7 +343,7 @@ BPF를 다양하게 써먹으려니 슬슬 한계점들이 보인다.
 
 eBPF에는 [여러 헬퍼 함수들](https://github.com/torvalds/linux/blob/v4.14/include/uapi/linux/bpf.h#L255)이 있어서 프로그램에서 호출할 수 있고 다른 프로그램을 `exec()`(내지 꼬리 호출) 할 수도 있다. 또 스택이 생겼고 힙 내지 공유 메모리 역할을 하는 자료 구조(맵)도 추가됐다. 사용자 공간에서도 맵에 접근할 수 있어서 설정이나 동작 결과를 위아래로 주고받는 데 쓸 수 있다. 그리고 이 새로운 자료 구조와 프로그램을 다루기 위한 새 시스템 호출 `bpf()`가 생겼다. 그렇게 틀이 갖춰지고 나서는 프로그램 종류가 하나씩 늘고 (네트워킹 여기저기, 실행 추적, ...) 맵 종류가 함께 늘어난다 (해시, 배열, 프로그램, 스택 트레이스, 장치, 소켓, LRU, LPM, 맵의 맵, ...).
 
-다음 문제는 프로그램과 맵 객체의 관리이다. 기본적으로 프로세스가 종료되면 (그래서 가령 소켓이 닫히면) 연계된 BPF 프로그램과 맵이 사라진다. 그런데 쓰이는 곳이 늘다 보면 프로세스와 독립적으로 객체가 유지돼야 하는 경우가 생기기 마련이다. 그래서 커널의 관련 서브시스템에서 참조를 유지해서 객체가 사라지는 걸 막기도 한다. 하지만 그걸로는 부족한 것이, 객체를 참조하는 파일 디스크립터가 닫히고 나면 사용자 공간에서 맵에 접근할 방법이 없다. 그래서 계속 도는 어떤 에이전트 프로세스에게 유닉스 도메인 소켓을 통해 파일 디스크립터를 넘겨서 보관하기도 한다. 번거로운 일이고, 그래서 객체를 [가상의 파일 시스템에 '저장'](https://lwn.net/Articles/664688/)할 수 있는 방법(`bpf(BPF_OBJ_{PIN,GET})`)이 생겼다. 그 bpf 타입 파일 시스템을 마운트 하면 셸에서 객체들을 관리할 수도 있다. 이런 최근 내용들은 [bpf(2) 맨페이지](https://github.com/wariua/manpages-ko/wiki/bpf%282%29)나 [커널 문서](https://wariua.cafe24.com/wiki/Documentation/networking/filter.txt)에도 아직 기록되지 않았다. `linux/include/linux/bpf.h` 파일과 `linux/kernel/bpf/` 내 파일들에서 정보를 얻을 수 있다. 또 ["eBPF 철저 소개"](https://lwn.net/Articles/740157/) 글에서 모든 프로그램 종류와 맵 타입을 간략히 설명해 준다.
+다음 문제는 프로그램과 맵 객체의 관리이다. 기본적으로 프로세스가 종료되면 (그래서 가령 소켓이 닫히면) 연계된 BPF 프로그램과 맵이 사라진다. 그런데 쓰이는 곳이 늘다 보면 프로세스와 독립적으로 객체가 유지돼야 하는 경우가 생기기 마련이다. 그래서 커널의 관련 서브시스템에서 참조를 유지해서 객체가 사라지는 걸 막기도 한다. 하지만 그걸로는 부족한 것이, 객체를 참조하는 파일 디스크립터가 닫히고 나면 사용자 공간에서 맵에 접근할 방법이 없다. 그래서 계속 도는 어떤 에이전트 프로세스에게 유닉스 도메인 소켓을 통해 파일 디스크립터를 넘겨서 보관하기도 한다. 번거로운 일이고, 그래서 객체를 [가상의 파일 시스템에 '저장'](https://lwn.net/Articles/664688/)할 수 있는 방법(`bpf(BPF_OBJ_{PIN,GET})`)이 생겼다. 그 bpf 타입 파일 시스템을 마운트 하면 셸에서 객체들을 관리할 수도 있다. 이런 최근 내용들은 [bpf(2) 맨페이지](https://wariua.github.io/man-pages-ko/bpf%282%29)나 [커널 문서](https://wariua.cafe24.com/wiki/Documentation/networking/filter.txt)에도 아직 기록되지 않았다. `linux/include/linux/bpf.h` 파일과 `linux/kernel/bpf/` 내 파일들에서 정보를 얻을 수 있다. 또 ["eBPF 철저 소개"](https://lwn.net/Articles/740157/) 글에서 모든 프로그램 종류와 맵 타입을 간략히 설명해 준다.
 
 맵은 커널 메모리를 소모하고 프로그램은 커널 문맥에서 동작한다. 당연히 접근 제어가 필요하다. `bpf()` 동작에 필요한 권한은 대략 다음과 같다.
 
@@ -657,7 +657,7 @@ BPF 원조 사용처인 `PF_PACKET` 소켓에는 일종의 [부하 분산 기능
 
 넷필터가 나왔는데 패킷 스케줄러가 안 나오면 섭섭하다. 분류자(classifier)와 행위(action)로 BPF 프로그램을 사용할 수 있다. 프로그램 입력은 마찬가지로 `struct __sk_buff`이되 더 많은 필드를 사용할 수 있다. 사용할 수 있는 헬퍼 함수도 훨씬 많다. 분류자는 classid를 반환하고 행위는 `TC_ACT_*`를 반환한다.
 
-[tc-bpf(8) 맨페이지](https://github.com/wariua/manpages-ko/wiki/tc-bpf%288%29)에는 `tc`뿐 아니라 BPF 프로그래밍 일반에 대한 유용한 내용이 많다. 그리고 [Cilium 매뉴얼](http://docs.cilium.io/en/latest/bpf/)에는 더 풍부한 정보가 있다.
+[tc-bpf(8) 맨페이지](https://wariua.github.io/man-pages-ko/tc-bpf%288%29)에는 `tc`뿐 아니라 BPF 프로그래밍 일반에 대한 유용한 내용이 많다. 그리고 [Cilium 매뉴얼](http://docs.cilium.io/en/latest/bpf/)에는 더 풍부한 정보가 있다.
 
 ### `BPF_PROG_TYPE_SK_SKB` - 소켓 간 메시지 전달
 
@@ -726,7 +726,7 @@ ip route add 10.1.1.0/30 encap mpls 200 via inet 10.1.1.1 dev swp1
 
 [Kprobes](https://lwn.net/Articles/132196/)를 이용하면 [커널 디버깅/추적/계측](https://www.ibm.com/developerworks/library/l-kprobes/index.html)을 할 수 있다. 프루브 지점을 설정하면, 그래서 그 위치의 인스트럭션이 [중지점 내지 점프 인스트럭션으로 교체](https://wariua.cafe24.com/wiki/Documentation/kprobes.txt#kprobe.EB.8A.94_.EC.96.B4.EB.96.BB.EA.B2.8C_.EB.8F.99.EC.9E.91.ED.95.98.EB.8A.94.EA.B0.80.3F)되고 나면 커널 실행 흐름이 거길 지날 때 미리 등록해 둔 핸들러가 호출된다. 그러면 자연스럽게 뒤따르는 확장은 [BPF 핸들러를 실행](https://github.com/torvalds/linux/blob/master/kernel/trace/bpf_trace.c)할 수 있게 하는 것이다.
 
-커널을 대상으로 하는 Kprobe와 사용자 프로세스를 대상으로 하는 Uprobe에서 핸들러로 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_KPROBE`이다. 커널 모듈 작성 없이 미리 정해둔 지점들을 간편하게 조사할 수 있는 Tracepoint와 시스템 호출 추적 메커니즘에 사용할 수 있는 프로그램이 `BPF_PROG_TYPE_TRACEPOINT`이다. 그리고 `perf` 등으로 이벤트 발생 통계를 얻는 데 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_PERF_EVENT`이다. 좀 뜬금없어 보이는 맵 타입 `BPF_MAP_TYPE_STACK_TRACE`와 헬퍼 함수 `bpf_get_stackid()`가 쓰이는 게 이쪽이기도 하다. <tt>[perf_event_open()](https://github.com/wariua/manpages-ko/wiki/perf_event_open%282%29)</tt>으로 얻은 디스크립터에 `ioctl(PERF_EVENT_IOC_SET_BPF)`로 프로그램을 붙인다. `linux/samples/bpf/`에 간단한 예시가 있다.
+커널을 대상으로 하는 Kprobe와 사용자 프로세스를 대상으로 하는 Uprobe에서 핸들러로 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_KPROBE`이다. 커널 모듈 작성 없이 미리 정해둔 지점들을 간편하게 조사할 수 있는 Tracepoint와 시스템 호출 추적 메커니즘에 사용할 수 있는 프로그램이 `BPF_PROG_TYPE_TRACEPOINT`이다. 그리고 `perf` 등으로 이벤트 발생 통계를 얻는 데 쓸 수 있는 프로그램이 `BPF_PROG_TYPE_PERF_EVENT`이다. 좀 뜬금없어 보이는 맵 타입 `BPF_MAP_TYPE_STACK_TRACE`와 헬퍼 함수 `bpf_get_stackid()`가 쓰이는 게 이쪽이기도 하다. <tt>[perf_event_open()](https://wariua.github.io/man-pages-ko/perf_event_open%282%29)</tt>으로 얻은 디스크립터에 `ioctl(PERF_EVENT_IOC_SET_BPF)`로 프로그램을 붙인다. `linux/samples/bpf/`에 간단한 예시가 있다.
 
 ----
 
